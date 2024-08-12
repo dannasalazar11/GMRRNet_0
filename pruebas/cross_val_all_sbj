@@ -1,0 +1,2363 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "9d8817ff",
+   "metadata": {
+    "_cell_guid": "b1076dfc-b9ad-4769-8c92-a6c4dae69d19",
+    "_uuid": "8f2839f25d086af736a60e9eeb907d3b93b6e0e5",
+    "execution": {
+     "iopub.execute_input": "2024-08-12T14:21:47.127952Z",
+     "iopub.status.busy": "2024-08-12T14:21:47.127197Z",
+     "iopub.status.idle": "2024-08-12T14:23:05.540428Z",
+     "shell.execute_reply": "2024-08-12T14:23:05.539252Z"
+    },
+    "papermill": {
+     "duration": 78.421631,
+     "end_time": "2024-08-12T14:23:05.542866",
+     "exception": false,
+     "start_time": "2024-08-12T14:21:47.121235",
+     "status": "completed"
+    },
+    "scrolled": true,
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Collecting git+https://github.com/UN-GCPDS/python-gcpds.databases\r\n",
+      "  Cloning https://github.com/UN-GCPDS/python-gcpds.databases to /tmp/pip-req-build-h5cgm36q\r\n",
+      "  Running command git clone --filter=blob:none --quiet https://github.com/UN-GCPDS/python-gcpds.databases /tmp/pip-req-build-h5cgm36q\r\n",
+      "  Resolved https://github.com/UN-GCPDS/python-gcpds.databases to commit c35637e1a19d7cd21656496339c1dedae6714916\r\n",
+      "  Preparing metadata (setup.py) ... \u001b[?25ldone\r\n",
+      "\u001b[?25hRequirement already satisfied: numpy in /opt/conda/lib/python3.10/site-packages (from gcpds-databases==0.2) (1.26.4)\r\n",
+      "Requirement already satisfied: scipy in /opt/conda/lib/python3.10/site-packages (from gcpds-databases==0.2) (1.11.4)\r\n",
+      "Requirement already satisfied: matplotlib in /opt/conda/lib/python3.10/site-packages (from gcpds-databases==0.2) (3.7.5)\r\n",
+      "Requirement already satisfied: mne in /opt/conda/lib/python3.10/site-packages (from gcpds-databases==0.2) (1.7.1)\r\n",
+      "Requirement already satisfied: tables in /opt/conda/lib/python3.10/site-packages (from gcpds-databases==0.2) (3.9.2)\r\n",
+      "Requirement already satisfied: tqdm in /opt/conda/lib/python3.10/site-packages (from gcpds-databases==0.2) (4.66.4)\r\n",
+      "Requirement already satisfied: pandas in /opt/conda/lib/python3.10/site-packages (from gcpds-databases==0.2) (2.2.2)\r\n",
+      "Collecting gdown (from gcpds-databases==0.2)\r\n",
+      "  Downloading gdown-5.2.0-py3-none-any.whl.metadata (5.8 kB)\r\n",
+      "Requirement already satisfied: beautifulsoup4 in /opt/conda/lib/python3.10/site-packages (from gdown->gcpds-databases==0.2) (4.12.2)\r\n",
+      "Requirement already satisfied: filelock in /opt/conda/lib/python3.10/site-packages (from gdown->gcpds-databases==0.2) (3.13.1)\r\n",
+      "Requirement already satisfied: requests[socks] in /opt/conda/lib/python3.10/site-packages (from gdown->gcpds-databases==0.2) (2.32.3)\r\n",
+      "Requirement already satisfied: contourpy>=1.0.1 in /opt/conda/lib/python3.10/site-packages (from matplotlib->gcpds-databases==0.2) (1.2.0)\r\n",
+      "Requirement already satisfied: cycler>=0.10 in /opt/conda/lib/python3.10/site-packages (from matplotlib->gcpds-databases==0.2) (0.12.1)\r\n",
+      "Requirement already satisfied: fonttools>=4.22.0 in /opt/conda/lib/python3.10/site-packages (from matplotlib->gcpds-databases==0.2) (4.47.0)\r\n",
+      "Requirement already satisfied: kiwisolver>=1.0.1 in /opt/conda/lib/python3.10/site-packages (from matplotlib->gcpds-databases==0.2) (1.4.5)\r\n",
+      "Requirement already satisfied: packaging>=20.0 in /opt/conda/lib/python3.10/site-packages (from matplotlib->gcpds-databases==0.2) (21.3)\r\n",
+      "Requirement already satisfied: pillow>=6.2.0 in /opt/conda/lib/python3.10/site-packages (from matplotlib->gcpds-databases==0.2) (9.5.0)\r\n",
+      "Requirement already satisfied: pyparsing>=2.3.1 in /opt/conda/lib/python3.10/site-packages (from matplotlib->gcpds-databases==0.2) (3.1.1)\r\n",
+      "Requirement already satisfied: python-dateutil>=2.7 in /opt/conda/lib/python3.10/site-packages (from matplotlib->gcpds-databases==0.2) (2.9.0.post0)\r\n",
+      "Requirement already satisfied: decorator in /opt/conda/lib/python3.10/site-packages (from mne->gcpds-databases==0.2) (5.1.1)\r\n",
+      "Requirement already satisfied: jinja2 in /opt/conda/lib/python3.10/site-packages (from mne->gcpds-databases==0.2) (3.1.2)\r\n",
+      "Requirement already satisfied: lazy-loader>=0.3 in /opt/conda/lib/python3.10/site-packages (from mne->gcpds-databases==0.2) (0.3)\r\n",
+      "Requirement already satisfied: pooch>=1.5 in /opt/conda/lib/python3.10/site-packages (from mne->gcpds-databases==0.2) (1.8.2)\r\n",
+      "Requirement already satisfied: pytz>=2020.1 in /opt/conda/lib/python3.10/site-packages (from pandas->gcpds-databases==0.2) (2023.3.post1)\r\n",
+      "Requirement already satisfied: tzdata>=2022.7 in /opt/conda/lib/python3.10/site-packages (from pandas->gcpds-databases==0.2) (2023.4)\r\n",
+      "Requirement already satisfied: numexpr>=2.6.2 in /opt/conda/lib/python3.10/site-packages (from tables->gcpds-databases==0.2) (2.10.1)\r\n",
+      "Requirement already satisfied: py-cpuinfo in /opt/conda/lib/python3.10/site-packages (from tables->gcpds-databases==0.2) (9.0.0)\r\n",
+      "Requirement already satisfied: blosc2>=2.3.0 in /opt/conda/lib/python3.10/site-packages (from tables->gcpds-databases==0.2) (2.7.0)\r\n",
+      "Requirement already satisfied: ndindex>=1.4 in /opt/conda/lib/python3.10/site-packages (from blosc2>=2.3.0->tables->gcpds-databases==0.2) (1.8)\r\n",
+      "Requirement already satisfied: msgpack in /opt/conda/lib/python3.10/site-packages (from blosc2>=2.3.0->tables->gcpds-databases==0.2) (1.0.7)\r\n",
+      "Requirement already satisfied: platformdirs>=2.5.0 in /opt/conda/lib/python3.10/site-packages (from pooch>=1.5->mne->gcpds-databases==0.2) (3.11.0)\r\n",
+      "Requirement already satisfied: six>=1.5 in /opt/conda/lib/python3.10/site-packages (from python-dateutil>=2.7->matplotlib->gcpds-databases==0.2) (1.16.0)\r\n",
+      "Requirement already satisfied: soupsieve>1.2 in /opt/conda/lib/python3.10/site-packages (from beautifulsoup4->gdown->gcpds-databases==0.2) (2.5)\r\n",
+      "Requirement already satisfied: MarkupSafe>=2.0 in /opt/conda/lib/python3.10/site-packages (from jinja2->mne->gcpds-databases==0.2) (2.1.3)\r\n",
+      "Requirement already satisfied: charset-normalizer<4,>=2 in /opt/conda/lib/python3.10/site-packages (from requests[socks]->gdown->gcpds-databases==0.2) (3.3.2)\r\n",
+      "Requirement already satisfied: idna<4,>=2.5 in /opt/conda/lib/python3.10/site-packages (from requests[socks]->gdown->gcpds-databases==0.2) (3.6)\r\n",
+      "Requirement already satisfied: urllib3<3,>=1.21.1 in /opt/conda/lib/python3.10/site-packages (from requests[socks]->gdown->gcpds-databases==0.2) (1.26.18)\r\n",
+      "Requirement already satisfied: certifi>=2017.4.17 in /opt/conda/lib/python3.10/site-packages (from requests[socks]->gdown->gcpds-databases==0.2) (2024.7.4)\r\n",
+      "Requirement already satisfied: PySocks!=1.5.7,>=1.5.6 in /opt/conda/lib/python3.10/site-packages (from requests[socks]->gdown->gcpds-databases==0.2) (1.7.1)\r\n",
+      "Downloading gdown-5.2.0-py3-none-any.whl (18 kB)\r\n",
+      "Building wheels for collected packages: gcpds-databases\r\n",
+      "  Building wheel for gcpds-databases (setup.py) ... \u001b[?25l-\b \bdone\r\n",
+      "\u001b[?25h  Created wheel for gcpds-databases: filename=gcpds_databases-0.2-py3-none-any.whl size=94504 sha256=87a82a67e289f760b70b47f23fe4cd70bba6334088ff0f74a121f2f5f2d43fd7\r\n",
+      "  Stored in directory: /tmp/pip-ephem-wheel-cache-ncveuhvn/wheels/8e/66/a7/91b78b1787a3e4d17cb82ea2da67845aa9389012c0ed8280b0\r\n",
+      "Successfully built gcpds-databases\r\n",
+      "Installing collected packages: gdown, gcpds-databases\r\n",
+      "Successfully installed gcpds-databases-0.2 gdown-5.2.0\r\n",
+      "Collecting git+https://github.com/UN-GCPDS/python-gcpds.EEG_Tensorflow_models\r\n",
+      "  Cloning https://github.com/UN-GCPDS/python-gcpds.EEG_Tensorflow_models to /tmp/pip-req-build-ury6n55j\r\n",
+      "  Running command git clone --filter=blob:none --quiet https://github.com/UN-GCPDS/python-gcpds.EEG_Tensorflow_models /tmp/pip-req-build-ury6n55j\r\n",
+      "  Resolved https://github.com/UN-GCPDS/python-gcpds.EEG_Tensorflow_models to commit 975885b1f6814fd5958199919b33e02a6a9aa152\r\n",
+      "  Preparing metadata (setup.py) ... \u001b[?25ldone\r\n",
+      "\u001b[?25hCollecting braindecode==0.7 (from EEG_Tensorflow_models==0.2)\r\n",
+      "  Downloading Braindecode-0.7-py3-none-any.whl.metadata (6.8 kB)\r\n",
+      "Collecting moabb (from EEG_Tensorflow_models==0.2)\r\n",
+      "  Downloading moabb-1.1.0-py3-none-any.whl.metadata (16 kB)\r\n",
+      "Collecting tensorflow-addons (from EEG_Tensorflow_models==0.2)\r\n",
+      "  Downloading tensorflow_addons-0.23.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (1.8 kB)\r\n",
+      "Requirement already satisfied: tensorflow>=2.8 in /opt/conda/lib/python3.10/site-packages (from EEG_Tensorflow_models==0.2) (2.15.0)\r\n",
+      "Collecting tf-keras-vis (from EEG_Tensorflow_models==0.2)\r\n",
+      "  Downloading tf_keras_vis-0.8.7-py3-none-any.whl.metadata (10 kB)\r\n",
+      "Requirement already satisfied: mne in /opt/conda/lib/python3.10/site-packages (from braindecode==0.7->EEG_Tensorflow_models==0.2) (1.7.1)\r\n",
+      "Requirement already satisfied: numpy in /opt/conda/lib/python3.10/site-packages (from braindecode==0.7->EEG_Tensorflow_models==0.2) (1.26.4)\r\n",
+      "Requirement already satisfied: pandas in /opt/conda/lib/python3.10/site-packages (from braindecode==0.7->EEG_Tensorflow_models==0.2) (2.2.2)\r\n",
+      "Requirement already satisfied: scipy in /opt/conda/lib/python3.10/site-packages (from braindecode==0.7->EEG_Tensorflow_models==0.2) (1.11.4)\r\n",
+      "Requirement already satisfied: matplotlib in /opt/conda/lib/python3.10/site-packages (from braindecode==0.7->EEG_Tensorflow_models==0.2) (3.7.5)\r\n",
+      "Requirement already satisfied: h5py in /opt/conda/lib/python3.10/site-packages (from braindecode==0.7->EEG_Tensorflow_models==0.2) (3.10.0)\r\n",
+      "Collecting skorch (from braindecode==0.7->EEG_Tensorflow_models==0.2)\r\n",
+      "  Downloading skorch-1.0.0-py3-none-any.whl.metadata (11 kB)\r\n",
+      "Requirement already satisfied: absl-py>=1.0.0 in /opt/conda/lib/python3.10/site-packages (from tensorflow>=2.8->EEG_Tensorflow_models==0.2) (1.4.0)\r\n",
+      "Requirement already satisfied: astunparse>=1.6.0 in /opt/conda/lib/python3.10/site-packages (from tensorflow>=2.8->EEG_Tensorflow_models==0.2) (1.6.3)\r\n",
+      "Requirement already satisfied: flatbuffers>=23.5.26 in /opt/conda/lib/python3.10/site-packages (from tensorflow>=2.8->EEG_Tensorflow_models==0.2) (23.5.26)\r\n",
+      "Requirement already satisfied: gast!=0.5.0,!=0.5.1,!=0.5.2,>=0.2.1 in /opt/conda/lib/python3.10/site-packages (from tensorflow>=2.8->EEG_Tensorflow_models==0.2) (0.5.4)\r\n",
+      "Requirement already satisfied: google-pasta>=0.1.1 in /opt/conda/lib/python3.10/site-packages (from tensorflow>=2.8->EEG_Tensorflow_models==0.2) (0.2.0)\r\n",
+      "Requirement already satisfied: libclang>=13.0.0 in /opt/conda/lib/python3.10/site-packages (from tensorflow>=2.8->EEG_Tensorflow_models==0.2) (16.0.6)\r\n",
+      "Requirement already satisfied: ml-dtypes~=0.2.0 in /opt/conda/lib/python3.10/site-packages (from tensorflow>=2.8->EEG_Tensorflow_models==0.2) (0.2.0)\r\n",
+      "Requirement already satisfied: opt-einsum>=2.3.2 in /opt/conda/lib/python3.10/site-packages (from tensorflow>=2.8->EEG_Tensorflow_models==0.2) (3.3.0)\r\n",
+      "Requirement already satisfied: packaging in /opt/conda/lib/python3.10/site-packages (from tensorflow>=2.8->EEG_Tensorflow_models==0.2) (21.3)\r\n",
+      "Requirement already satisfied: protobuf!=4.21.0,!=4.21.1,!=4.21.2,!=4.21.3,!=4.21.4,!=4.21.5,<5.0.0dev,>=3.20.3 in /opt/conda/lib/python3.10/site-packages (from tensorflow>=2.8->EEG_Tensorflow_models==0.2) (3.20.3)\r\n",
+      "Requirement already satisfied: setuptools in /opt/conda/lib/python3.10/site-packages (from tensorflow>=2.8->EEG_Tensorflow_models==0.2) (69.0.3)\r\n",
+      "Requirement already satisfied: six>=1.12.0 in /opt/conda/lib/python3.10/site-packages (from tensorflow>=2.8->EEG_Tensorflow_models==0.2) (1.16.0)\r\n",
+      "Requirement already satisfied: termcolor>=1.1.0 in /opt/conda/lib/python3.10/site-packages (from tensorflow>=2.8->EEG_Tensorflow_models==0.2) (2.4.0)\r\n",
+      "Requirement already satisfied: typing-extensions>=3.6.6 in /opt/conda/lib/python3.10/site-packages (from tensorflow>=2.8->EEG_Tensorflow_models==0.2) (4.9.0)\r\n",
+      "Requirement already satisfied: wrapt<1.15,>=1.11.0 in /opt/conda/lib/python3.10/site-packages (from tensorflow>=2.8->EEG_Tensorflow_models==0.2) (1.14.1)\r\n",
+      "Requirement already satisfied: tensorflow-io-gcs-filesystem>=0.23.1 in /opt/conda/lib/python3.10/site-packages (from tensorflow>=2.8->EEG_Tensorflow_models==0.2) (0.35.0)\r\n",
+      "Requirement already satisfied: grpcio<2.0,>=1.24.3 in /opt/conda/lib/python3.10/site-packages (from tensorflow>=2.8->EEG_Tensorflow_models==0.2) (1.60.0)\r\n",
+      "Requirement already satisfied: tensorboard<2.16,>=2.15 in /opt/conda/lib/python3.10/site-packages (from tensorflow>=2.8->EEG_Tensorflow_models==0.2) (2.15.1)\r\n",
+      "Requirement already satisfied: tensorflow-estimator<2.16,>=2.15.0 in /opt/conda/lib/python3.10/site-packages (from tensorflow>=2.8->EEG_Tensorflow_models==0.2) (2.15.0)\r\n",
+      "Collecting keras<2.16,>=2.15.0 (from tensorflow>=2.8->EEG_Tensorflow_models==0.2)\r\n",
+      "  Downloading keras-2.15.0-py3-none-any.whl.metadata (2.4 kB)\r\n",
+      "Requirement already satisfied: PyYAML<7.0,>=6.0 in /opt/conda/lib/python3.10/site-packages (from moabb->EEG_Tensorflow_models==0.2) (6.0.1)\r\n",
+      "Collecting coverage<8.0.0,>=7.0.1 (from moabb->EEG_Tensorflow_models==0.2)\r\n",
+      "  Downloading coverage-7.6.1-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (8.3 kB)\r\n",
+      "Collecting edfio<0.5.0,>=0.4.2 (from moabb->EEG_Tensorflow_models==0.2)\r\n",
+      "  Downloading edfio-0.4.3-py3-none-any.whl.metadata (4.0 kB)\r\n",
+      "Collecting edflib-python<2.0.0,>=1.0.6 (from moabb->EEG_Tensorflow_models==0.2)\r\n",
+      "  Downloading EDFlib_Python-1.0.8-py3-none-any.whl.metadata (1.3 kB)\r\n",
+      "Requirement already satisfied: memory-profiler<0.62.0,>=0.61.0 in /opt/conda/lib/python3.10/site-packages (from moabb->EEG_Tensorflow_models==0.2) (0.61.0)\r\n",
+      "Collecting mne-bids<0.15,>=0.14 (from moabb->EEG_Tensorflow_models==0.2)\r\n",
+      "  Downloading mne_bids-0.14-py2.py3-none-any.whl.metadata (4.8 kB)\r\n",
+      "Collecting pandas (from braindecode==0.7->EEG_Tensorflow_models==0.2)\r\n",
+      "  Downloading pandas-1.5.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)\r\n",
+      "Requirement already satisfied: pooch<2.0.0,>=1.6.0 in /opt/conda/lib/python3.10/site-packages (from moabb->EEG_Tensorflow_models==0.2) (1.8.2)\r\n",
+      "Collecting pyriemann<0.7,>=0.6 (from moabb->EEG_Tensorflow_models==0.2)\r\n",
+      "  Downloading pyriemann-0.6-py2.py3-none-any.whl.metadata (8.3 kB)\r\n",
+      "Collecting pytest<8.0.0,>=7.4.0 (from moabb->EEG_Tensorflow_models==0.2)\r\n",
+      "  Downloading pytest-7.4.4-py3-none-any.whl.metadata (7.9 kB)\r\n",
+      "Requirement already satisfied: requests<3.0.0,>=2.28.1 in /opt/conda/lib/python3.10/site-packages (from moabb->EEG_Tensorflow_models==0.2) (2.32.3)\r\n",
+      "Collecting scikit-learn>=1.4.2 (from moabb->EEG_Tensorflow_models==0.2)\r\n",
+      "  Downloading scikit_learn-1.5.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (12 kB)\r\n",
+      "Requirement already satisfied: seaborn<0.13.0,>=0.12.1 in /opt/conda/lib/python3.10/site-packages (from moabb->EEG_Tensorflow_models==0.2) (0.12.2)\r\n",
+      "Requirement already satisfied: tqdm<5.0.0,>=4.64.1 in /opt/conda/lib/python3.10/site-packages (from moabb->EEG_Tensorflow_models==0.2) (4.66.4)\r\n",
+      "Requirement already satisfied: urllib3<2.0.0,>=1.26.15 in /opt/conda/lib/python3.10/site-packages (from moabb->EEG_Tensorflow_models==0.2) (1.26.18)\r\n",
+      "Collecting typeguard<3.0.0,>=2.7 (from tensorflow-addons->EEG_Tensorflow_models==0.2)\r\n",
+      "  Downloading typeguard-2.13.3-py3-none-any.whl.metadata (3.6 kB)\r\n",
+      "Requirement already satisfied: pillow in /opt/conda/lib/python3.10/site-packages (from tf-keras-vis->EEG_Tensorflow_models==0.2) (9.5.0)\r\n",
+      "Requirement already satisfied: deprecated in /opt/conda/lib/python3.10/site-packages (from tf-keras-vis->EEG_Tensorflow_models==0.2) (1.2.14)\r\n",
+      "Requirement already satisfied: imageio in /opt/conda/lib/python3.10/site-packages (from tf-keras-vis->EEG_Tensorflow_models==0.2) (2.33.1)\r\n",
+      "Requirement already satisfied: wheel<1.0,>=0.23.0 in /opt/conda/lib/python3.10/site-packages (from astunparse>=1.6.0->tensorflow>=2.8->EEG_Tensorflow_models==0.2) (0.42.0)\r\n",
+      "Requirement already satisfied: contourpy>=1.0.1 in /opt/conda/lib/python3.10/site-packages (from matplotlib->braindecode==0.7->EEG_Tensorflow_models==0.2) (1.2.0)\r\n",
+      "Requirement already satisfied: cycler>=0.10 in /opt/conda/lib/python3.10/site-packages (from matplotlib->braindecode==0.7->EEG_Tensorflow_models==0.2) (0.12.1)\r\n",
+      "Requirement already satisfied: fonttools>=4.22.0 in /opt/conda/lib/python3.10/site-packages (from matplotlib->braindecode==0.7->EEG_Tensorflow_models==0.2) (4.47.0)\r\n",
+      "Requirement already satisfied: kiwisolver>=1.0.1 in /opt/conda/lib/python3.10/site-packages (from matplotlib->braindecode==0.7->EEG_Tensorflow_models==0.2) (1.4.5)\r\n",
+      "Requirement already satisfied: pyparsing>=2.3.1 in /opt/conda/lib/python3.10/site-packages (from matplotlib->braindecode==0.7->EEG_Tensorflow_models==0.2) (3.1.1)\r\n",
+      "Requirement already satisfied: python-dateutil>=2.7 in /opt/conda/lib/python3.10/site-packages (from matplotlib->braindecode==0.7->EEG_Tensorflow_models==0.2) (2.9.0.post0)\r\n",
+      "Requirement already satisfied: psutil in /opt/conda/lib/python3.10/site-packages (from memory-profiler<0.62.0,>=0.61.0->moabb->EEG_Tensorflow_models==0.2) (5.9.3)\r\n",
+      "Requirement already satisfied: decorator in /opt/conda/lib/python3.10/site-packages (from mne->braindecode==0.7->EEG_Tensorflow_models==0.2) (5.1.1)\r\n",
+      "Requirement already satisfied: jinja2 in /opt/conda/lib/python3.10/site-packages (from mne->braindecode==0.7->EEG_Tensorflow_models==0.2) (3.1.2)\r\n",
+      "Requirement already satisfied: lazy-loader>=0.3 in /opt/conda/lib/python3.10/site-packages (from mne->braindecode==0.7->EEG_Tensorflow_models==0.2) (0.3)\r\n",
+      "Requirement already satisfied: pytz>=2020.1 in /opt/conda/lib/python3.10/site-packages (from pandas->braindecode==0.7->EEG_Tensorflow_models==0.2) (2023.3.post1)\r\n",
+      "Requirement already satisfied: platformdirs>=2.5.0 in /opt/conda/lib/python3.10/site-packages (from pooch<2.0.0,>=1.6.0->moabb->EEG_Tensorflow_models==0.2) (3.11.0)\r\n",
+      "Requirement already satisfied: joblib in /opt/conda/lib/python3.10/site-packages (from pyriemann<0.7,>=0.6->moabb->EEG_Tensorflow_models==0.2) (1.4.2)\r\n",
+      "Requirement already satisfied: iniconfig in /opt/conda/lib/python3.10/site-packages (from pytest<8.0.0,>=7.4.0->moabb->EEG_Tensorflow_models==0.2) (2.0.0)\r\n",
+      "Requirement already satisfied: pluggy<2.0,>=0.12 in /opt/conda/lib/python3.10/site-packages (from pytest<8.0.0,>=7.4.0->moabb->EEG_Tensorflow_models==0.2) (1.5.0)\r\n",
+      "Requirement already satisfied: exceptiongroup>=1.0.0rc8 in /opt/conda/lib/python3.10/site-packages (from pytest<8.0.0,>=7.4.0->moabb->EEG_Tensorflow_models==0.2) (1.2.0)\r\n",
+      "Requirement already satisfied: tomli>=1.0.0 in /opt/conda/lib/python3.10/site-packages (from pytest<8.0.0,>=7.4.0->moabb->EEG_Tensorflow_models==0.2) (2.0.1)\r\n",
+      "Requirement already satisfied: charset-normalizer<4,>=2 in /opt/conda/lib/python3.10/site-packages (from requests<3.0.0,>=2.28.1->moabb->EEG_Tensorflow_models==0.2) (3.3.2)\r\n",
+      "Requirement already satisfied: idna<4,>=2.5 in /opt/conda/lib/python3.10/site-packages (from requests<3.0.0,>=2.28.1->moabb->EEG_Tensorflow_models==0.2) (3.6)\r\n",
+      "Requirement already satisfied: certifi>=2017.4.17 in /opt/conda/lib/python3.10/site-packages (from requests<3.0.0,>=2.28.1->moabb->EEG_Tensorflow_models==0.2) (2024.7.4)\r\n",
+      "Requirement already satisfied: threadpoolctl>=3.1.0 in /opt/conda/lib/python3.10/site-packages (from scikit-learn>=1.4.2->moabb->EEG_Tensorflow_models==0.2) (3.2.0)\r\n",
+      "Requirement already satisfied: google-auth<3,>=1.6.3 in /opt/conda/lib/python3.10/site-packages (from tensorboard<2.16,>=2.15->tensorflow>=2.8->EEG_Tensorflow_models==0.2) (2.26.1)\r\n",
+      "Requirement already satisfied: google-auth-oauthlib<2,>=0.5 in /opt/conda/lib/python3.10/site-packages (from tensorboard<2.16,>=2.15->tensorflow>=2.8->EEG_Tensorflow_models==0.2) (1.2.0)\r\n",
+      "Requirement already satisfied: markdown>=2.6.8 in /opt/conda/lib/python3.10/site-packages (from tensorboard<2.16,>=2.15->tensorflow>=2.8->EEG_Tensorflow_models==0.2) (3.5.2)\r\n",
+      "Requirement already satisfied: tensorboard-data-server<0.8.0,>=0.7.0 in /opt/conda/lib/python3.10/site-packages (from tensorboard<2.16,>=2.15->tensorflow>=2.8->EEG_Tensorflow_models==0.2) (0.7.2)\r\n",
+      "Requirement already satisfied: werkzeug>=1.0.1 in /opt/conda/lib/python3.10/site-packages (from tensorboard<2.16,>=2.15->tensorflow>=2.8->EEG_Tensorflow_models==0.2) (3.0.3)\r\n",
+      "Requirement already satisfied: tabulate>=0.7.7 in /opt/conda/lib/python3.10/site-packages (from skorch->braindecode==0.7->EEG_Tensorflow_models==0.2) (0.9.0)\r\n",
+      "Requirement already satisfied: cachetools<6.0,>=2.0.0 in /opt/conda/lib/python3.10/site-packages (from google-auth<3,>=1.6.3->tensorboard<2.16,>=2.15->tensorflow>=2.8->EEG_Tensorflow_models==0.2) (4.2.4)\r\n",
+      "Requirement already satisfied: pyasn1-modules>=0.2.1 in /opt/conda/lib/python3.10/site-packages (from google-auth<3,>=1.6.3->tensorboard<2.16,>=2.15->tensorflow>=2.8->EEG_Tensorflow_models==0.2) (0.3.0)\r\n",
+      "Requirement already satisfied: rsa<5,>=3.1.4 in /opt/conda/lib/python3.10/site-packages (from google-auth<3,>=1.6.3->tensorboard<2.16,>=2.15->tensorflow>=2.8->EEG_Tensorflow_models==0.2) (4.9)\r\n",
+      "Requirement already satisfied: requests-oauthlib>=0.7.0 in /opt/conda/lib/python3.10/site-packages (from google-auth-oauthlib<2,>=0.5->tensorboard<2.16,>=2.15->tensorflow>=2.8->EEG_Tensorflow_models==0.2) (1.3.1)\r\n",
+      "Requirement already satisfied: MarkupSafe>=2.1.1 in /opt/conda/lib/python3.10/site-packages (from werkzeug>=1.0.1->tensorboard<2.16,>=2.15->tensorflow>=2.8->EEG_Tensorflow_models==0.2) (2.1.3)\r\n",
+      "Requirement already satisfied: pyasn1<0.6.0,>=0.4.6 in /opt/conda/lib/python3.10/site-packages (from pyasn1-modules>=0.2.1->google-auth<3,>=1.6.3->tensorboard<2.16,>=2.15->tensorflow>=2.8->EEG_Tensorflow_models==0.2) (0.5.1)\r\n",
+      "Requirement already satisfied: oauthlib>=3.0.0 in /opt/conda/lib/python3.10/site-packages (from requests-oauthlib>=0.7.0->google-auth-oauthlib<2,>=0.5->tensorboard<2.16,>=2.15->tensorflow>=2.8->EEG_Tensorflow_models==0.2) (3.2.2)\r\n",
+      "Downloading Braindecode-0.7-py3-none-any.whl (184 kB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m184.4/184.4 kB\u001b[0m \u001b[31m5.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading moabb-1.1.0-py3-none-any.whl (230 kB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m230.7/230.7 kB\u001b[0m \u001b[31m12.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading tensorflow_addons-0.23.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (611 kB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m611.8/611.8 kB\u001b[0m \u001b[31m28.8 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading tf_keras_vis-0.8.7-py3-none-any.whl (52 kB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m52.5/52.5 kB\u001b[0m \u001b[31m3.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading coverage-7.6.1-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (234 kB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m234.7/234.7 kB\u001b[0m \u001b[31m15.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading edfio-0.4.3-py3-none-any.whl (25 kB)\r\n",
+      "Downloading EDFlib_Python-1.0.8-py3-none-any.whl (26 kB)\r\n",
+      "Downloading keras-2.15.0-py3-none-any.whl (1.7 MB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m1.7/1.7 MB\u001b[0m \u001b[31m60.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading mne_bids-0.14-py2.py3-none-any.whl (1.2 MB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m1.2/1.2 MB\u001b[0m \u001b[31m51.4 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading pandas-1.5.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (12.1 MB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m12.1/12.1 MB\u001b[0m \u001b[31m97.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading pyriemann-0.6-py2.py3-none-any.whl (111 kB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m111.7/111.7 kB\u001b[0m \u001b[31m7.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading pytest-7.4.4-py3-none-any.whl (325 kB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m325.3/325.3 kB\u001b[0m \u001b[31m18.3 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading scikit_learn-1.5.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (13.4 MB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m13.4/13.4 MB\u001b[0m \u001b[31m94.8 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading typeguard-2.13.3-py3-none-any.whl (17 kB)\r\n",
+      "Downloading skorch-1.0.0-py3-none-any.whl (239 kB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m239.4/239.4 kB\u001b[0m \u001b[31m12.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hBuilding wheels for collected packages: EEG_Tensorflow_models\r\n",
+      "  Building wheel for EEG_Tensorflow_models (setup.py) ... \u001b[?25l-\b \bdone\r\n",
+      "\u001b[?25h  Created wheel for EEG_Tensorflow_models: filename=EEG_Tensorflow_models-0.2-py3-none-any.whl size=29376 sha256=634c8100d0e7ca17395e076345cb161bab418d81f1759585bcf51cb2547b3167\r\n",
+      "  Stored in directory: /tmp/pip-ephem-wheel-cache-g74_nrfv/wheels/05/dc/8a/9d552a33fb901c0d7ab2a72746b5ea17643c570811c711d568\r\n",
+      "Successfully built EEG_Tensorflow_models\r\n",
+      "Installing collected packages: typeguard, keras, edflib-python, edfio, coverage, tf-keras-vis, tensorflow-addons, scikit-learn, pytest, pandas, skorch, pyriemann, mne-bids, braindecode, moabb, EEG_Tensorflow_models\r\n",
+      "  Attempting uninstall: typeguard\r\n",
+      "    Found existing installation: typeguard 4.1.5\r\n",
+      "    Uninstalling typeguard-4.1.5:\r\n",
+      "      Successfully uninstalled typeguard-4.1.5\r\n",
+      "  Attempting uninstall: keras\r\n",
+      "    Found existing installation: keras 3.4.1\r\n",
+      "    Uninstalling keras-3.4.1:\r\n",
+      "      Successfully uninstalled keras-3.4.1\r\n",
+      "  Attempting uninstall: scikit-learn\r\n",
+      "    Found existing installation: scikit-learn 1.2.2\r\n",
+      "    Uninstalling scikit-learn-1.2.2:\r\n",
+      "      Successfully uninstalled scikit-learn-1.2.2\r\n",
+      "  Attempting uninstall: pytest\r\n",
+      "    Found existing installation: pytest 8.2.2\r\n",
+      "    Uninstalling pytest-8.2.2:\r\n",
+      "      Successfully uninstalled pytest-8.2.2\r\n",
+      "  Attempting uninstall: pandas\r\n",
+      "    Found existing installation: pandas 2.2.2\r\n",
+      "    Uninstalling pandas-2.2.2:\r\n",
+      "      Successfully uninstalled pandas-2.2.2\r\n",
+      "\u001b[31mERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.\r\n",
+      "cudf 24.6.1 requires cubinlinker, which is not installed.\r\n",
+      "cudf 24.6.1 requires cupy-cuda11x>=12.0.0, which is not installed.\r\n",
+      "cudf 24.6.1 requires ptxcompiler, which is not installed.\r\n",
+      "cuml 24.6.1 requires cupy-cuda11x>=12.0.0, which is not installed.\r\n",
+      "dask-cudf 24.6.1 requires cupy-cuda11x>=12.0.0, which is not installed.\r\n",
+      "tensorflow-decision-forests 1.8.1 requires wurlitzer, which is not installed.\r\n",
+      "beatrix-jupyterlab 2023.128.151533 requires jupyterlab~=3.6.0, but you have jupyterlab 4.2.3 which is incompatible.\r\n",
+      "cudf 24.6.1 requires cuda-python<12.0a0,>=11.7.1, but you have cuda-python 12.5.0 which is incompatible.\r\n",
+      "cudf 24.6.1 requires pandas<2.2.3dev0,>=2.0, but you have pandas 1.5.3 which is incompatible.\r\n",
+      "dask-cudf 24.6.1 requires pandas<2.2.3dev0,>=2.0, but you have pandas 1.5.3 which is incompatible.\r\n",
+      "dask-expr 1.1.7 requires pandas>=2, but you have pandas 1.5.3 which is incompatible.\r\n",
+      "featuretools 1.31.0 requires pandas>=2.0.0, but you have pandas 1.5.3 which is incompatible.\r\n",
+      "libpysal 4.9.2 requires packaging>=22, but you have packaging 21.3 which is incompatible.\r\n",
+      "libpysal 4.9.2 requires shapely>=2.0.1, but you have shapely 1.8.5.post1 which is incompatible.\r\n",
+      "mizani 0.11.4 requires pandas>=2.1.0, but you have pandas 1.5.3 which is incompatible.\r\n",
+      "momepy 0.7.2 requires shapely>=2, but you have shapely 1.8.5.post1 which is incompatible.\r\n",
+      "osmnx 1.9.3 requires shapely>=2.0, but you have shapely 1.8.5.post1 which is incompatible.\r\n",
+      "plotnine 0.13.6 requires pandas<3.0.0,>=2.1.0, but you have pandas 1.5.3 which is incompatible.\r\n",
+      "pointpats 2.5.0 requires shapely>=2, but you have shapely 1.8.5.post1 which is incompatible.\r\n",
+      "pyldavis 3.4.1 requires pandas>=2.0.0, but you have pandas 1.5.3 which is incompatible.\r\n",
+      "rapids-dask-dependency 24.6.0a0 requires dask==2024.5.1, but you have dask 2024.7.0 which is incompatible.\r\n",
+      "spaghetti 1.7.6 requires shapely>=2.0.1, but you have shapely 1.8.5.post1 which is incompatible.\r\n",
+      "spopt 0.6.1 requires shapely>=2.0.1, but you have shapely 1.8.5.post1 which is incompatible.\r\n",
+      "woodwork 0.31.0 requires pandas>=2.0.0, but you have pandas 1.5.3 which is incompatible.\r\n",
+      "xarray 2024.6.0 requires packaging>=23.1, but you have packaging 21.3 which is incompatible.\r\n",
+      "xarray 2024.6.0 requires pandas>=2.0, but you have pandas 1.5.3 which is incompatible.\r\n",
+      "ydata-profiling 4.6.4 requires numpy<1.26,>=1.16.0, but you have numpy 1.26.4 which is incompatible.\r\n",
+      "ydata-profiling 4.6.4 requires typeguard<5,>=4.1.2, but you have typeguard 2.13.3 which is incompatible.\u001b[0m\u001b[31m\r\n",
+      "\u001b[0mSuccessfully installed EEG_Tensorflow_models-0.2 braindecode-0.7 coverage-7.6.1 edfio-0.4.3 edflib-python-1.0.8 keras-2.15.0 mne-bids-0.14 moabb-1.1.0 pandas-1.5.3 pyriemann-0.6 pytest-7.4.4 scikit-learn-1.5.1 skorch-1.0.0 tensorflow-addons-0.23.0 tf-keras-vis-0.8.7 typeguard-2.13.3\r\n",
+      "Collecting git+https://github.com/UN-GCPDS/python-gcpds.visualizations.git\r\n",
+      "  Cloning https://github.com/UN-GCPDS/python-gcpds.visualizations.git to /tmp/pip-req-build-rcozij5e\r\n",
+      "  Running command git clone --filter=blob:none --quiet https://github.com/UN-GCPDS/python-gcpds.visualizations.git /tmp/pip-req-build-rcozij5e\r\n",
+      "  Resolved https://github.com/UN-GCPDS/python-gcpds.visualizations.git to commit 162dbeac141a7472d3b0bd7f005932241b4663a5\r\n",
+      "  Preparing metadata (setup.py) ... \u001b[?25ldone\r\n",
+      "\u001b[?25hCollecting python-circos (from gcpds-visualizations==0.6)\r\n",
+      "  Downloading python_circos-0.3.0-py3-none-any.whl.metadata (766 bytes)\r\n",
+      "Requirement already satisfied: matplotlib>=3.5.3 in /opt/conda/lib/python3.10/site-packages (from gcpds-visualizations==0.6) (3.7.5)\r\n",
+      "Requirement already satisfied: numpy in /opt/conda/lib/python3.10/site-packages (from gcpds-visualizations==0.6) (1.26.4)\r\n",
+      "Requirement already satisfied: mne in /opt/conda/lib/python3.10/site-packages (from gcpds-visualizations==0.6) (1.7.1)\r\n",
+      "Requirement already satisfied: contourpy>=1.0.1 in /opt/conda/lib/python3.10/site-packages (from matplotlib>=3.5.3->gcpds-visualizations==0.6) (1.2.0)\r\n",
+      "Requirement already satisfied: cycler>=0.10 in /opt/conda/lib/python3.10/site-packages (from matplotlib>=3.5.3->gcpds-visualizations==0.6) (0.12.1)\r\n",
+      "Requirement already satisfied: fonttools>=4.22.0 in /opt/conda/lib/python3.10/site-packages (from matplotlib>=3.5.3->gcpds-visualizations==0.6) (4.47.0)\r\n",
+      "Requirement already satisfied: kiwisolver>=1.0.1 in /opt/conda/lib/python3.10/site-packages (from matplotlib>=3.5.3->gcpds-visualizations==0.6) (1.4.5)\r\n",
+      "Requirement already satisfied: packaging>=20.0 in /opt/conda/lib/python3.10/site-packages (from matplotlib>=3.5.3->gcpds-visualizations==0.6) (21.3)\r\n",
+      "Requirement already satisfied: pillow>=6.2.0 in /opt/conda/lib/python3.10/site-packages (from matplotlib>=3.5.3->gcpds-visualizations==0.6) (9.5.0)\r\n",
+      "Requirement already satisfied: pyparsing>=2.3.1 in /opt/conda/lib/python3.10/site-packages (from matplotlib>=3.5.3->gcpds-visualizations==0.6) (3.1.1)\r\n",
+      "Requirement already satisfied: python-dateutil>=2.7 in /opt/conda/lib/python3.10/site-packages (from matplotlib>=3.5.3->gcpds-visualizations==0.6) (2.9.0.post0)\r\n",
+      "Requirement already satisfied: decorator in /opt/conda/lib/python3.10/site-packages (from mne->gcpds-visualizations==0.6) (5.1.1)\r\n",
+      "Requirement already satisfied: jinja2 in /opt/conda/lib/python3.10/site-packages (from mne->gcpds-visualizations==0.6) (3.1.2)\r\n",
+      "Requirement already satisfied: lazy-loader>=0.3 in /opt/conda/lib/python3.10/site-packages (from mne->gcpds-visualizations==0.6) (0.3)\r\n",
+      "Requirement already satisfied: pooch>=1.5 in /opt/conda/lib/python3.10/site-packages (from mne->gcpds-visualizations==0.6) (1.8.2)\r\n",
+      "Requirement already satisfied: scipy>=1.7.1 in /opt/conda/lib/python3.10/site-packages (from mne->gcpds-visualizations==0.6) (1.11.4)\r\n",
+      "Requirement already satisfied: tqdm in /opt/conda/lib/python3.10/site-packages (from mne->gcpds-visualizations==0.6) (4.66.4)\r\n",
+      "Collecting biopython>=1.78 (from python-circos->gcpds-visualizations==0.6)\r\n",
+      "  Downloading biopython-1.84-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (12 kB)\r\n",
+      "Requirement already satisfied: platformdirs>=2.5.0 in /opt/conda/lib/python3.10/site-packages (from pooch>=1.5->mne->gcpds-visualizations==0.6) (3.11.0)\r\n",
+      "Requirement already satisfied: requests>=2.19.0 in /opt/conda/lib/python3.10/site-packages (from pooch>=1.5->mne->gcpds-visualizations==0.6) (2.32.3)\r\n",
+      "Requirement already satisfied: six>=1.5 in /opt/conda/lib/python3.10/site-packages (from python-dateutil>=2.7->matplotlib>=3.5.3->gcpds-visualizations==0.6) (1.16.0)\r\n",
+      "Requirement already satisfied: MarkupSafe>=2.0 in /opt/conda/lib/python3.10/site-packages (from jinja2->mne->gcpds-visualizations==0.6) (2.1.3)\r\n",
+      "Requirement already satisfied: charset-normalizer<4,>=2 in /opt/conda/lib/python3.10/site-packages (from requests>=2.19.0->pooch>=1.5->mne->gcpds-visualizations==0.6) (3.3.2)\r\n",
+      "Requirement already satisfied: idna<4,>=2.5 in /opt/conda/lib/python3.10/site-packages (from requests>=2.19.0->pooch>=1.5->mne->gcpds-visualizations==0.6) (3.6)\r\n",
+      "Requirement already satisfied: urllib3<3,>=1.21.1 in /opt/conda/lib/python3.10/site-packages (from requests>=2.19.0->pooch>=1.5->mne->gcpds-visualizations==0.6) (1.26.18)\r\n",
+      "Requirement already satisfied: certifi>=2017.4.17 in /opt/conda/lib/python3.10/site-packages (from requests>=2.19.0->pooch>=1.5->mne->gcpds-visualizations==0.6) (2024.7.4)\r\n",
+      "Downloading python_circos-0.3.0-py3-none-any.whl (27 kB)\r\n",
+      "Downloading biopython-1.84-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.2 MB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m3.2/3.2 MB\u001b[0m \u001b[31m51.8 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hBuilding wheels for collected packages: gcpds-visualizations\r\n",
+      "  Building wheel for gcpds-visualizations (setup.py) ... \u001b[?25l-\b \bdone\r\n",
+      "\u001b[?25h  Created wheel for gcpds-visualizations: filename=gcpds_visualizations-0.6-py3-none-any.whl size=12439 sha256=f3345c7b76923aedad5905cbdf8c380577c8d767ae1496b3622fadd698586f3a\r\n",
+      "  Stored in directory: /tmp/pip-ephem-wheel-cache-ep451194/wheels/fa/f8/e8/78c4b4940a8349e29d9199eee5e3c5f526123608864b3834af\r\n",
+      "Successfully built gcpds-visualizations\r\n",
+      "Installing collected packages: biopython, python-circos, gcpds-visualizations\r\n",
+      "Successfully installed biopython-1.84 gcpds-visualizations-0.6 python-circos-0.3.0\r\n"
+     ]
+    }
+   ],
+   "source": [
+    "!pip install -U git+https://github.com/UN-GCPDS/python-gcpds.databases #Package for database reading.\n",
+    "!pip install -U git+https://github.com/UN-GCPDS/python-gcpds.EEG_Tensorflow_models\n",
+    "!pip install -U git+https://github.com/UN-GCPDS/python-gcpds.visualizations.git"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "0391d454",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-08-12T14:23:05.571484Z",
+     "iopub.status.busy": "2024-08-12T14:23:05.571196Z",
+     "iopub.status.idle": "2024-08-12T14:23:20.141039Z",
+     "shell.execute_reply": "2024-08-12T14:23:20.140264Z"
+    },
+    "papermill": {
+     "duration": 14.586832,
+     "end_time": "2024-08-12T14:23:20.143357",
+     "exception": false,
+     "start_time": "2024-08-12T14:23:05.556525",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "2024-08-12 14:23:11.091255: E external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:9261] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered\n",
+      "2024-08-12 14:23:11.091384: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:607] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered\n",
+      "2024-08-12 14:23:11.218931: E external/local_xla/xla/stream_executor/cuda/cuda_blas.cc:1515] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered\n"
+     ]
+    }
+   ],
+   "source": [
+    "from gcpds.databases import GIGA_MI_ME\n",
+    "from gcpds.visualizations.topoplots import topoplot\n",
+    "from gcpds.visualizations.connectivities import CircosConnectivity\n",
+    "from typing import Optional, Sequence, Tuple\n",
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "import mne\n",
+    "from sklearn.base import BaseEstimator, TransformerMixin\n",
+    "from scipy.signal import freqz, filtfilt, resample\n",
+    "from scipy.signal import butter as bw\n",
+    "import tensorflow as tf\n",
+    "from tensorflow.keras.models import Model, Sequential\n",
+    "from tensorflow.keras.layers import  Input, Flatten, Dense, Activation, Dropout, concatenate, Layer, Conv2D, AveragePooling2D, SeparableConv2D, DepthwiseConv2D, BatchNormalization, SpatialDropout2D, Lambda\n",
+    "from tensorflow.keras.callbacks import EarlyStopping\n",
+    "from tensorflow.keras.constraints import max_norm\n",
+    "from tensorflow.keras.losses import Loss\n",
+    "from sklearn.model_selection import train_test_split\n",
+    "from sklearn.preprocessing import OneHotEncoder, MinMaxScaler\n",
+    "from sklearn.decomposition import PCA\n",
+    "from sklearn.manifold import TSNE"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "4163b539",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-08-12T14:23:20.172361Z",
+     "iopub.status.busy": "2024-08-12T14:23:20.171802Z",
+     "iopub.status.idle": "2024-08-12T14:23:20.204963Z",
+     "shell.execute_reply": "2024-08-12T14:23:20.204155Z"
+    },
+    "papermill": {
+     "duration": 0.049355,
+     "end_time": "2024-08-12T14:23:20.206763",
+     "exception": false,
+     "start_time": "2024-08-12T14:23:20.157408",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "def load_GIGA(db: GIGA_MI_ME,\n",
+    "              sbj: int,\n",
+    "              eeg_ch_names: Sequence[str],\n",
+    "              fs: float, \n",
+    "              f_bank: np.ndarray, \n",
+    "              vwt: np.ndarray, \n",
+    "              new_fs: float) -> Tuple[np.ndarray, np.ndarray]:\n",
+    "    \"\"\"\n",
+    "    This function loads the GIGA-Science dataset locally.\n",
+    "    \n",
+    "    Parameters\n",
+    "    ----------\n",
+    "    db: GIGA_MI_ME\n",
+    "        A GIGA_MI_ME object created by the gcpds.databases.GIGA_MI_ME module\n",
+    "    sbj: int\n",
+    "        The subject to load\n",
+    "    eeg_ch_names: Sequence[str]\n",
+    "        The EEG channel names in order\n",
+    "    fs: float\n",
+    "        The sampling frecuency\n",
+    "    f_bank: np.ndarray\n",
+    "        The frecuency range(s) to use\n",
+    "    vwt: np.ndarray\n",
+    "        The time window to load\n",
+    "    new_fs: float\n",
+    "        The new sampling frecuency to resample the data to\n",
+    "    \n",
+    "    Returns\n",
+    "    ----------\n",
+    "    Tuple[np.ndarray, np.ndarray]\n",
+    "        A tuple containing the EEG signals for each trial and the corresponding label\n",
+    "    \n",
+    "    Notes\n",
+    "    ----------\n",
+    "    The database description can be found here:\n",
+    "    https://academic.oup.com/gigascience/article/6/7/gix034/3796323\n",
+    "    \"\"\"\n",
+    "    index_eeg_chs = db.format_channels_selectors(channels = eeg_ch_names) - 1\n",
+    "\n",
+    "    tf_repr = TimeFrequencyRpr(sfreq = fs, f_bank = f_bank, vwt = vwt)\n",
+    "\n",
+    "    db.load_subject(sbj)\n",
+    "    X, y = db.get_data(classes = ['left hand mi', 'right hand mi']) #Load MI classes, all channels {EEG}, reject bad trials, uV\n",
+    "    X = X[:, index_eeg_chs, :] #spatial rearrangement\n",
+    "    X = np.squeeze(tf_repr.transform(X))\n",
+    "    #Resampling\n",
+    "    if new_fs == fs:\n",
+    "        print('No resampling, since new sampling rate same.')\n",
+    "    else:\n",
+    "        print(\"Resampling from {:f} to {:f} Hz.\".format(fs, new_fs))\n",
+    "        X = resample(X, int((X.shape[-1]/fs)*new_fs), axis = -1)\n",
+    "\n",
+    "    #print(np.mean (X), np.var(X))\n",
+    "    return X, y\n",
+    "\n",
+    "def butterworth_digital_filter(X, N, Wn, btype, fs, axis=-1, padtype=None, padlen=0, method='pad', irlen=None):\n",
+    "    \"\"\"\n",
+    "    Apply digital butterworth filter\n",
+    "    INPUT\n",
+    "    ------\n",
+    "    1. X: (D array)\n",
+    "    array with signals.\n",
+    "    2. N: (int+)\n",
+    "    The order of the filter.\n",
+    "    3. Wn: (float+ or 1D array)\n",
+    "    The critical frequency or frequencies. For lowpass and highpass filters, Wn is a scalar; for bandpass and bandstop filters, Wn is a length-2 vector.\n",
+    "    For a Butterworth filter, this is the point at which the gain drops to 1/sqrt(2) that of the passband (the “-3 dB point”).\n",
+    "    If fs is not specified, Wn units are normalized from 0 to 1, where 1 is the Nyquist frequency (Wn is thus in half cycles / sample and defined as 2*critical frequencies / fs). If fs is specified, Wn is in the same units as fs.\n",
+    "    4. btype: (str) {‘lowpass’, ‘highpass’, ‘bandpass’, ‘bandstop’}\n",
+    "    The type of filter\n",
+    "    5. fs: (float+)\n",
+    "    The sampling frequency of the digital system.\n",
+    "    6. axis: (int), Default=1.\n",
+    "    The axis of x to which the filter is applied.\n",
+    "    7. padtype: (str) or None, {'odd', 'even', 'constant'}\n",
+    "    This determines the type of extension to use for the padded signal to which the filter is applied. If padtype is None, no padding is used. The default is ‘odd’.\n",
+    "    8. padlen: (int+) or None, Default=0\n",
+    "    The number of elements by which to extend x at both ends of axis before applying the filter. This value must be less than x.shape[axis] - 1. padlen=0 implies no padding.\n",
+    "    9. method: (str), {'pad', 'gust'}\n",
+    "    Determines the method for handling the edges of the signal, either “pad” or “gust”. When method is “pad”, the signal is padded; the type of padding is determined by padtype\n",
+    "    and padlen, and irlen is ignored. When method is “gust”, Gustafsson’s method is used, and padtype and padlen are ignored.\n",
+    "    10. irlen: (int) or None, Default=nONE\n",
+    "    When method is “gust”, irlen specifies the length of the impulse response of the filter. If irlen is None, no part of the impulse response is ignored.\n",
+    "    For a long signal, specifying irlen can significantly improve the performance of the filter.\n",
+    "    OUTPUT\n",
+    "    ------\n",
+    "    X_fil: (D array)\n",
+    "    array with filtered signals.\n",
+    "    \"\"\"\n",
+    "    b, a = bw(N, Wn, btype, analog=False, output='ba', fs=fs)\n",
+    "    return filtfilt(b, a, X, axis=axis, padtype=padtype, padlen=padlen, method=method, irlen=irlen)\n",
+    "class TimeFrequencyRpr(BaseEstimator, TransformerMixin):\n",
+    "    \"\"\"\n",
+    "    Time frequency representation of EEG signals.\n",
+    "\n",
+    "    Parameters\n",
+    "    ----------\n",
+    "    1. sfreq:  (float) Sampling frequency in Hz.\n",
+    "    2. f_bank: (2D array) Filter banks Frequencies. Default=None\n",
+    "    3. vwt:    (2D array) Interest time windows. Default=None\n",
+    "    Methods\n",
+    "    -------\n",
+    "    1. fit(X, y=None)\n",
+    "    2. transform(X, y=None)\n",
+    "    \"\"\"\n",
+    "    def __init__(self, sfreq, f_bank=None, vwt=None):\n",
+    "        self.sfreq = sfreq\n",
+    "        self.f_bank = f_bank\n",
+    "        self.vwt = vwt\n",
+    "    # ------------------------------------------------------------------------------\n",
+    "\n",
+    "    def _validation_param(self):\n",
+    "        \"\"\"\n",
+    "        Validate Time-Frequency characterization parameters.\n",
+    "        INPUT\n",
+    "        -----\n",
+    "          1. self\n",
+    "        ------\n",
+    "          2. None\n",
+    "        \"\"\"\n",
+    "        if self.sfreq <= 0:\n",
+    "            raise ValueError('Non negative sampling frequency is accepted')\n",
+    "\n",
+    "\n",
+    "        if self.f_bank is None:\n",
+    "            self.flag_f_bank = False\n",
+    "        elif self.f_bank.ndim != 2:\n",
+    "            raise ValueError('Band frequencies have to be a 2D array')\n",
+    "        else:\n",
+    "            self.flag_f_bank = True\n",
+    "\n",
+    "        if self.vwt is None:\n",
+    "            self.flag_vwt = False\n",
+    "        elif self.vwt.ndim != 2:\n",
+    "            raise ValueError('Time windows have to be a 2D array')\n",
+    "        else:\n",
+    "            self.flag_vwt = True\n",
+    "\n",
+    "    # ------------------------------------------------------------------------------\n",
+    "    def _filter_bank(self, X):\n",
+    "        \"\"\"\n",
+    "        Filter bank Characterization.\n",
+    "        INPUT\n",
+    "        -----\n",
+    "          1. X: (3D array) set of EEG signals, shape (trials, channels, time_samples)\n",
+    "        OUTPUT\n",
+    "        ------\n",
+    "          1. X_f: (4D array) set of filtered EEG signals, shape (trials, channels, time_samples, frequency_bands)\n",
+    "        \"\"\"\n",
+    "        X_f = np.zeros((X.shape[0], X.shape[1], X.shape[2], self.f_bank.shape[0])) #epochs, Ch, Time, bands\n",
+    "        for f in np.arange(self.f_bank.shape[0]):\n",
+    "            X_f[:,:,:,f] = butterworth_digital_filter(X, N=5, Wn=self.f_bank[f], btype='bandpass', fs=self.sfreq)\n",
+    "        return X_f\n",
+    "\n",
+    "    # ------------------------------------------------------------------------------\n",
+    "    def _sliding_windows(self, X):\n",
+    "        \"\"\"\n",
+    "        Sliding Windows Characterization.\n",
+    "        INPUT\n",
+    "        -----\n",
+    "          1. X: (3D array) set of EEG signals, shape (trials, channels, time_samples)\n",
+    "        OUTPUT\n",
+    "        ------\n",
+    "          1. X_w: (4D array) shape (trials, channels, window_time_samples, number_of_windows)\n",
+    "        \"\"\"\n",
+    "        window_lenght = int(self.sfreq*self.vwt[0,1] - self.sfreq*self.vwt[0,0])\n",
+    "        X_w = np.zeros((X.shape[0], X.shape[1], window_lenght, self.vwt.shape[0]))\n",
+    "        for w in np.arange(self.vwt.shape[0]):\n",
+    "            X_w[:,:,:,w] = X[:,:,int(self.sfreq*self.vwt[w,0]):int(self.sfreq*self.vwt[w,1])]\n",
+    "        return X_w\n",
+    "\n",
+    "    # ------------------------------------------------------------------------------\n",
+    "    def fit(self, X, y=None):\n",
+    "        \"\"\"\n",
+    "        fit.\n",
+    "        INPUT\n",
+    "        -----\n",
+    "          1. X: (3D array) set of EEG signals, shape (trials, channels, time_samples)\n",
+    "          2. y: (1D array) target labels. Default=None\n",
+    "        OUTPUT\n",
+    "        ------\n",
+    "          1. None\n",
+    "        \"\"\"\n",
+    "        pass\n",
+    "\n",
+    "    # ------------------------------------------------------------------------------\n",
+    "    def transform(self, X, y=None):\n",
+    "        \"\"\"\n",
+    "        Time frequency representation of EEG signals.\n",
+    "        INPUT\n",
+    "        -----\n",
+    "          1. X: (3D array) set of EEG signals, shape (trials, channels, times)\n",
+    "        OUTPUT\n",
+    "        ------\n",
+    "          1. X_wf: (5D array) Time-frequency representation of EEG signals, shape (trials, channels, window_time_samples, number_of_windows, frequency_bands)\n",
+    "        \"\"\"\n",
+    "        self._validation_param()     #Validate sfreq, f_freq, vwt\n",
+    "\n",
+    "        #Avoid edge effects of digital filter, 1st:fbk, 2th:vwt\n",
+    "        if self.flag_f_bank:\n",
+    "            X_f = self._filter_bank(X)\n",
+    "        else:\n",
+    "            X_f = X[:,:,:,np.newaxis]\n",
+    "\n",
+    "        if self.flag_vwt:\n",
+    "            X_wf = []\n",
+    "            for f in range(X_f.shape[3]):\n",
+    "                X_wf.append(self._sliding_windows(X_f[:,:,:,f]))\n",
+    "            X_wf = np.stack(X_wf, axis=-1)\n",
+    "        else:\n",
+    "            X_wf = X_f[:,:,:,np.newaxis,:]\n",
+    "        return X_wf\n",
+    "    \n",
+    "def plot_training_history(history):\n",
+    "    # Extraer datos de history\n",
+    "    train_loss = history.history['loss']\n",
+    "    val_loss = history.history['val_loss']\n",
+    "    train_out_activation_loss = history.history['out_activation_loss']\n",
+    "    val_out_activation_loss = history.history['val_out_activation_loss']\n",
+    "    train_concatenate_2_loss = history.history['concatenated_entropies_loss']\n",
+    "    val_concatenate_2_loss = history.history['val_concatenated_entropies_loss']\n",
+    "    train_out_activation_acc = history.history['out_activation_binary_accuracy']\n",
+    "    val_out_activation_acc = history.history['val_out_activation_binary_accuracy']\n",
+    "    epochs = range(1, len(train_loss) + 1)  # Número de épocas\n",
+    "\n",
+    "    # Graficar pérdida\n",
+    "    plt.figure(figsize=(8, 4))\n",
+    "    plt.plot(epochs, train_loss, 'b', label='Training total loss')\n",
+    "    plt.plot(epochs, val_loss, 'r', label='Validation total loss')\n",
+    "    plt.plot(epochs, train_out_activation_loss, 'g', label='Training out_activation_loss')\n",
+    "    plt.plot(epochs, val_out_activation_loss, 'm', label='Validation out_activation_loss')\n",
+    "    plt.plot(epochs, train_concatenate_2_loss, 'y', label='Training concatenated_entropies_loss')\n",
+    "    plt.plot(epochs, val_concatenate_2_loss, 'c', label='Validation concatenated_entropies_loss')\n",
+    "    plt.title('Training and Validation Loss')\n",
+    "    plt.xlabel('Epochs')\n",
+    "    plt.ylabel('Loss')\n",
+    "    plt.legend()\n",
+    "    plt.grid()\n",
+    "    plt.show()\n",
+    "\n",
+    "    # Graficar precisión\n",
+    "    plt.figure(figsize=(8, 4))\n",
+    "    plt.plot(epochs, train_out_activation_acc, 'b', label='Training out_activation_binary_accuracy')\n",
+    "    plt.plot(epochs, val_out_activation_acc, 'r', label='Validation out_activation_binary_accuracy')\n",
+    "    plt.title('Training and Validation Accuracy')\n",
+    "    plt.xlabel('Epochs')\n",
+    "    plt.ylabel('Accuracy')\n",
+    "    plt.legend()\n",
+    "    plt.grid()\n",
+    "    plt.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "78a6c9e4",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-08-12T14:23:20.233562Z",
+     "iopub.status.busy": "2024-08-12T14:23:20.233315Z",
+     "iopub.status.idle": "2024-08-12T14:23:20.240284Z",
+     "shell.execute_reply": "2024-08-12T14:23:20.239445Z"
+    },
+    "papermill": {
+     "duration": 0.022426,
+     "end_time": "2024-08-12T14:23:20.242162",
+     "exception": false,
+     "start_time": "2024-08-12T14:23:20.219736",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "db = GIGA_MI_ME('/kaggle/input/giga-science-gcpds/GIGA_MI_ME')\n",
+    "fs = db.metadata['sampling_rate']\n",
+    "# 64 canales\n",
+    "eeg_ch_names = ['Fp1','Fpz','Fp2',\n",
+    "              'AF7','AF3','AFz','AF4','AF8',\n",
+    "              'F7','F5','F3','F1','Fz','F2','F4','F6','F8',\n",
+    "              'FT7','FC5','FC3','FC1','FCz','FC2','FC4','FC6','FT8',\n",
+    "              'T7','C5','C3','C1','Cz','C2','C4','C6','T8',\n",
+    "              'TP7','CP5','CP3','CP1','CPz','CP2','CP4','CP6','TP8',\n",
+    "              'P9','P7','P5','P3','P1','Pz','P2','P4','P6','P8','P10',\n",
+    "              'PO7','PO3','POz','PO4','PO8',\n",
+    "              'O1','Oz','O2',\n",
+    "              'Iz']\n",
+    "load_args = dict(db = db,\n",
+    "                 eeg_ch_names = eeg_ch_names,\n",
+    "                 fs = fs,\n",
+    "                 f_bank = np.asarray([[4., 40.]]), # bandpass\n",
+    "                 vwt = np.asarray([[2.5, 5]]),\n",
+    "                 new_fs = 128.)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "56d65302",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-08-12T14:23:20.269262Z",
+     "iopub.status.busy": "2024-08-12T14:23:20.268980Z",
+     "iopub.status.idle": "2024-08-12T14:23:20.294612Z",
+     "shell.execute_reply": "2024-08-12T14:23:20.293861Z"
+    },
+    "papermill": {
+     "duration": 0.041431,
+     "end_time": "2024-08-12T14:23:20.296469",
+     "exception": false,
+     "start_time": "2024-08-12T14:23:20.255038",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "class GaussianKernelLayer(Layer):\n",
+    "    def __init__(self, sigma=1.0, **kwargs):\n",
+    "        super(GaussianKernelLayer, self).__init__(**kwargs)\n",
+    "        self.sigma = sigma\n",
+    "\n",
+    "    def build(self, input_shape):\n",
+    "        super(GaussianKernelLayer, self).build(input_shape)\n",
+    "\n",
+    "    def call(self, inputs):\n",
+    "        # inputs shape: (N, C, T, F)\n",
+    "        N, C, T, F = tf.shape(inputs)[0], tf.shape(inputs)[1], tf.shape(inputs)[2], tf.shape(inputs)[3]\n",
+    "        \n",
+    "        # Reshape the input to (N*F, C, T)\n",
+    "        inputs = tf.transpose(inputs, perm=(0,3,1,2)) # (N,F,C,T)\n",
+    "        inputs_reshaped = tf.reshape(inputs, (N*F, C, T))\n",
+    "        \n",
+    "        # Calculate the pairwise squared Euclidean distance\n",
+    "        squared_differences = tf.expand_dims(inputs_reshaped, axis=2) - tf.expand_dims(inputs_reshaped, axis=1) #(N*F,C,C,T)\n",
+    "        squared_differences = tf.square(squared_differences)                                                    #(N*F,C,C,T)\n",
+    "        pairwise_distances_squared = tf.reduce_sum(squared_differences, axis=-1)                                #(N*F,C,C)\n",
+    "        pairwise_distances_squared = tf.reshape(pairwise_distances_squared, (N,F,C,C))                          #(N,F,C,C)\n",
+    "        pairwise_distances_squared = tf.transpose(pairwise_distances_squared, perm=(0,2,3,1))                   #(N,C,C,F)\n",
+    "        \n",
+    "        # Calculate the Gaussian kernel\n",
+    "        gaussian_kernel = tf.exp(-pairwise_distances_squared / (2.0 * tf.square(self.sigma)))\n",
+    "        \n",
+    "        return gaussian_kernel\n",
+    "    \n",
+    "def inception_block(x, filters, sigmas):\n",
+    "    # Filtros\n",
+    "    f1, f2,f3 = filters\n",
+    "\n",
+    "    # Rama 1: \n",
+    "    branch_k1 = GaussianKernelLayer(sigma=sigmas[0], name=\"gaussian_layer_1\")(x)\n",
+    "    branch1 = Conv2D(f1, (3, 3), padding='same', activation='relu')(branch_k1)\n",
+    "\n",
+    "    # Rama 2: \n",
+    "    branch_k2 = GaussianKernelLayer(sigma=sigmas[1], name=\"gaussian_layer_2\")(x)\n",
+    "    branch2 = Conv2D(f2, (3, 3), padding='same', activation='relu')(branch_k2)\n",
+    "\n",
+    "    # Rama 3: \n",
+    "    branch_k3 = GaussianKernelLayer(sigma=sigmas[2], name=\"gaussian_layer_3\")(x)\n",
+    "    branch3 = Conv2D(f3, (3, 3), padding='same', activation='relu')(branch_k3)\n",
+    "\n",
+    "    # Concatenar las cuatro ramas\n",
+    "    output = concatenate([branch1, branch2, branch3], axis=-1)\n",
+    "    return branch_k1, branch_k2, branch_k3, output\n",
+    "\n",
+    "def renyi_entropy(K, alpha=2):\n",
+    "        \"\"\"\n",
+    "        input: K tensor, (N,F,C,C)\n",
+    "        output: NxF\n",
+    "        \"\"\"\n",
+    "        \n",
+    "        C = K.shape[1]\n",
+    "        \n",
+    "        # Normalizamos el kernel antes de calcular la entropía\n",
+    "        \n",
+    "        # Crear una máscara para obtener los elementos diagonales\n",
+    "        diag = tf.expand_dims(tf.linalg.diag_part(K), -1)\n",
+    "        # Calcular el producto de los elementos diagonales\n",
+    "        denominator = tf.math.sqrt(tf.linalg.matmul(diag, diag, transpose_b=True))\n",
+    "        # Normalización\n",
+    "        \n",
+    "        X = (1/C) * tf.math.divide(K, denominator)\n",
+    "        \n",
+    "        if alpha == 2:\n",
+    "            # Realiza el producto matricial entre las dos últimas dimensiones\n",
+    "            X_matmul = tf.linalg.matmul(X, X)\n",
+    "            return -tf.math.log(tf.linalg.trace(X_matmul))\n",
+    "        else:\n",
+    "            # Calcula los autovalores y autovectores de las dos últimas dimensiones\n",
+    "            e, _ = tf.linalg.eigh(X)\n",
+    "            # Calcula la entropía de Renyi\n",
+    "            return (tf.math.log(tf.reduce_sum(tf.math.real(tf.math.pow(e, alpha)), axis=-1)) / (1 - alpha))\n",
+    "                               \n",
+    "def joint_renyi_entropy(K, alpha):\n",
+    "        \"\"\"\n",
+    "        input: K, (N,F,C,C)\n",
+    "        output: Nx1\n",
+    "        \"\"\"\n",
+    "        \n",
+    "        C = K.shape[-1]\n",
+    "        product = tf.reduce_prod(K,axis=1) # (N,C,C)\n",
+    "        \n",
+    "        trace = tf.linalg.trace(product)\n",
+    "        trace = tf.expand_dims(tf.expand_dims(trace, axis=-1), axis=-1)\n",
+    "        trace = tf.tile(trace, [1,C,C])\n",
+    "        \n",
+    "        argument = product/trace\n",
+    "        argument = tf.expand_dims(argument, axis=1) # es necesario porque renyi_entropy recibe 4 dimensiones (1,C,C)\n",
+    "        joint_entropy = renyi_entropy(argument, alpha=alpha)\n",
+    "                               \n",
+    "        return joint_entropy\n",
+    "    \n",
+    "class RenyiMutualInformation(Loss):\n",
+    "    def __init__(self, C, **kwargs):\n",
+    "        self.C = C\n",
+    "        super().__init__(**kwargs)\n",
+    "\n",
+    "    def call(self, y_true, y_pred):\n",
+    "        \"\"\"\n",
+    "        y_true: \n",
+    "        y_pred: N x (F+1) las F entropías marginales y la entropía conjunta\n",
+    "        \"\"\"\n",
+    "        \n",
+    "        F = y_pred.shape[1]-1\n",
+    "        entropy,  joint_entropy = tf.split(y_pred, [F,1], axis=-1)\n",
+    "        \n",
+    "        #Cast todo\n",
+    "        entropy = tf.cast(entropy, tf.float64)\n",
+    "        joint_entropy = tf.cast(joint_entropy, tf.float64)\n",
+    "        log_C = tf.math.log(tf.cast(self.C, tf.float64))\n",
+    "        \n",
+    "        mutual_information = tf.math.abs((tf.expand_dims(tf.reduce_sum(entropy, axis=-1), axis=-1) - joint_entropy)) / (F * log_C) # normalizado\n",
+    "\n",
+    "\n",
+    "        return mutual_information\n",
+    "    \n",
+    "# Normalizamos \n",
+    "\n",
+    "class NormalizedBinaryCrossentropy(Loss):\n",
+    "    def __init__(self, **kwargs):\n",
+    "        super().__init__(**kwargs)\n",
+    "\n",
+    "    def call(self, y_true, y_pred):\n",
+    "        \"\"\"\n",
+    "        y_true: N x 2\n",
+    "        y_pred: N x 2 \n",
+    "        \"\"\"\n",
+    "        batch_size = tf.shape(y_pred)[0]  # batch_size is now an integer tensor\n",
+    "        batch_size_float = tf.cast(batch_size, tf.float32)\n",
+    "        \n",
+    "        cce = tf.keras.losses.binary_crossentropy(y_true, y_pred)\n",
+    "        \n",
+    "        left = tf.tile(tf.expand_dims([1.0, 0.0], axis=0), [batch_size, 1])\n",
+    "        right = tf.tile(tf.expand_dims([0.0, 1.0], axis=0), [batch_size, 1])\n",
+    "        \n",
+    "        cce_left = tf.keras.losses.binary_crossentropy(left, y_pred)\n",
+    "        cce_right = tf.keras.losses.binary_crossentropy(right, y_pred)\n",
+    "        \n",
+    "        cce_norm = tf.divide(cce, (cce_left + cce_right))\n",
+    "        \n",
+    "        return cce_norm"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "1ce9472c",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-08-12T14:23:20.324353Z",
+     "iopub.status.busy": "2024-08-12T14:23:20.324037Z",
+     "iopub.status.idle": "2024-08-12T14:23:20.336138Z",
+     "shell.execute_reply": "2024-08-12T14:23:20.335366Z"
+    },
+    "papermill": {
+     "duration": 0.027654,
+     "end_time": "2024-08-12T14:23:20.338017",
+     "exception": false,
+     "start_time": "2024-08-12T14:23:20.310363",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "def KernelConvInceptionMI(nb_classes=2, Chans = 64, Samples = 320, \n",
+    "             kernLength = 64, norm_rate = 0.25, alpha=2):\n",
+    "    \n",
+    "    ######\n",
+    "    F1 = 3\n",
+    "    F2 = 5\n",
+    "    F3 = 3\n",
+    "    ######\n",
+    "    \n",
+    "    input1   = Input(shape = (Chans, Samples, 1))\n",
+    "    adj_matrix= Input(shape = (Chans, Chans))\n",
+    "\n",
+    "    ##################################################################\n",
+    "    conv2D       = Conv2D(F1, (1, kernLength), padding = 'same',\n",
+    "                                   name='Conv2D_1',\n",
+    "                                   input_shape = (Chans, Samples, 1),\n",
+    "                                   use_bias = False)(input1)\n",
+    "    block1       = BatchNormalization()(conv2D)\n",
+    "    \n",
+    "    sigma1 = 0.8\n",
+    "    sigma2 = 2.2\n",
+    "    sigma3 = 4.8\n",
+    "\n",
+    "    branch_k1, branch_k2, branch_k3, inception    = inception_block(block1, [F2,F2,F2], [sigma1,sigma2,sigma3])\n",
+    "    \n",
+    "    ##############\n",
+    "    \n",
+    "    concatenated_branches = concatenate([branch_k1, branch_k2, branch_k3], axis=-1)\n",
+    "    concatenated_branches= tf.transpose(concatenated_branches, perm = (0,3,1,2))\n",
+    "    layer_entropy = Lambda((lambda x: renyi_entropy(x, alpha=alpha)), name=\"entropy\")(concatenated_branches)\n",
+    "    \n",
+    "    layer_joint_entropy = Lambda((lambda x: joint_renyi_entropy(x,alpha=alpha)), name=\"joint_entropy\")(concatenated_branches)\n",
+    "    \n",
+    "    concatenate_entropies = concatenate([layer_entropy,layer_joint_entropy], axis=-1, name=\"concatenated_entropies\")\n",
+    "    \n",
+    "    ###############\n",
+    "    conv2D       = Conv2D(F3, 3, padding = 'same',\n",
+    "                                   name='Conv2D_2')(inception)\n",
+    "    \n",
+    "    conv2D       = BatchNormalization()(conv2D)\n",
+    "    flatten      = Flatten(name = 'flatten')(conv2D)\n",
+    "    \n",
+    "    dense        = Dense(64,kernel_constraint = max_norm(norm_rate), activation=\"relu\")(flatten)\n",
+    "    dense        = Dense(nb_classes, name = 'output', \n",
+    "                         kernel_constraint = max_norm(norm_rate))(dense)\n",
+    "    softmax      = Activation('softmax', name = 'out_activation')(dense)\n",
+    "    \n",
+    "    \n",
+    "    model        = Model(inputs=input1, outputs=[softmax,concatenate_entropies])    \n",
+    "    \n",
+    "    model.compile(optimizer='adam', loss=[NormalizedBinaryCrossentropy(),RenyiMutualInformation(C = tf.cast(64.0, tf.float64), name='MutualInfo')], loss_weights=[0.8,0.2], metrics=[['binary_accuracy'], [None]])\n",
+    "    \n",
+    "    return model"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "8475440b",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-08-12T14:23:20.365810Z",
+     "iopub.status.busy": "2024-08-12T14:23:20.365206Z",
+     "iopub.status.idle": "2024-08-12T14:23:20.783380Z",
+     "shell.execute_reply": "2024-08-12T14:23:20.782583Z"
+    },
+    "papermill": {
+     "duration": 0.434072,
+     "end_time": "2024-08-12T14:23:20.785533",
+     "exception": false,
+     "start_time": "2024-08-12T14:23:20.351461",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "from sklearn.model_selection import KFold\n",
+    "from sklearn.preprocessing import OneHotEncoder\n",
+    "from keras_tuner import HyperModel, RandomSearch, Objective\n",
+    "from IPython.display import FileLink\n",
+    "\n",
+    "# Suponiendo que load_GIGA y EEGNet ya están definidos\n",
+    "\n",
+    "def CV_giga(sbj, results_df):\n",
+    "    print(\"Training subject\", sbj)\n",
+    "    X, y = load_GIGA(sbj=sbj, **load_args)\n",
+    "\n",
+    "    encoder = OneHotEncoder(sparse_output=True)\n",
+    "    y = encoder.fit_transform(y.reshape(-1,1)).toarray()\n",
+    "\n",
+    "    kfold = KFold(n_splits=5, shuffle=True, random_state=42)\n",
+    "    accuracies = []\n",
+    "\n",
+    "    for train, test in kfold.split(X, y):\n",
+    "        # Crear el modelo\n",
+    "        model = KernelConvInceptionMI()\n",
+    "\n",
+    "        # Entrenar el modelo\n",
+    "        history = model.fit(X[train], y[train], epochs=150, batch_size=32, verbose=0,\n",
+    "                            validation_data=(X[test], y[test]))\n",
+    "\n",
+    "        # Evaluar el modelo en el fold actual\n",
+    "        scores = model.evaluate(X[test], y[test], verbose=1)\n",
+    "        accuracies.append(scores[-1])\n",
+    "\n",
+    "    # Calcular la media y desviación estándar\n",
+    "    mean_accuracy = np.mean(accuracies)\n",
+    "    std_accuracy = np.std(accuracies)\n",
+    "\n",
+    "    # Mostrar resultados de la validación cruzada\n",
+    "    print(f\"Mean Val Binary Accuracy: {mean_accuracy * 100:.2f}% (+/- {std_accuracy * 100:.2f}%)\")\n",
+    "\n",
+    "    # Guardar los resultados en el DataFrame\n",
+    "    results_df = results_df.append({\n",
+    "        'Subject': sbj,\n",
+    "        'Mean Accuracy': mean_accuracy,\n",
+    "        'Standard Deviation': std_accuracy\n",
+    "    }, ignore_index=True)\n",
+    "\n",
+    "    return results_df\n",
+    "\n",
+    "# Crear un DataFrame vacío\n",
+    "results_df = pd.DataFrame(columns=['Subject', 'Mean Accuracy', 'Standard Deviation'])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "e42e2091",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-08-12T14:23:20.814541Z",
+     "iopub.status.busy": "2024-08-12T14:23:20.814002Z",
+     "iopub.status.idle": "2024-08-12T17:17:26.203532Z",
+     "shell.execute_reply": "2024-08-12T17:17:26.202451Z"
+    },
+    "papermill": {
+     "duration": 10445.444545,
+     "end_time": "2024-08-12T17:17:26.244723",
+     "exception": false,
+     "start_time": "2024-08-12T14:23:20.800178",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Training subject 1\n",
+      "Resampling from 512.000000 to 128.000000 Hz.\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "WARNING: All log messages before absl::InitializeLog() is called are written to STDERR\n",
+      "I0000 00:00:1723472613.557868     211 device_compiler.h:186] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2837 - out_activation_loss: 0.3492 - concatenated_entropies_loss: 0.0218 - out_activation_binary_accuracy: 0.6750\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.2358 - out_activation_loss: 0.2901 - concatenated_entropies_loss: 0.0187 - out_activation_binary_accuracy: 0.7500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2260 - out_activation_loss: 0.2774 - concatenated_entropies_loss: 0.0204 - out_activation_binary_accuracy: 0.7500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1774 - out_activation_loss: 0.2171 - concatenated_entropies_loss: 0.0186 - out_activation_binary_accuracy: 0.8000\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.2484 - out_activation_loss: 0.3042 - concatenated_entropies_loss: 0.0256 - out_activation_binary_accuracy: 0.6500\n",
+      "Mean Val Binary Accuracy: 72.50% (+/- 5.48%)\n",
+      "Training subject 2\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.4231 - out_activation_loss: 0.5189 - concatenated_entropies_loss: 0.0400 - out_activation_binary_accuracy: 0.4500\n",
+      "2/2 [==============================] - 0s 14ms/step - loss: 0.3242 - out_activation_loss: 0.3995 - concatenated_entropies_loss: 0.0230 - out_activation_binary_accuracy: 0.6500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2715 - out_activation_loss: 0.3272 - concatenated_entropies_loss: 0.0487 - out_activation_binary_accuracy: 0.7000\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.3313 - out_activation_loss: 0.4091 - concatenated_entropies_loss: 0.0204 - out_activation_binary_accuracy: 0.6500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.4139 - out_activation_loss: 0.5112 - concatenated_entropies_loss: 0.0248 - out_activation_binary_accuracy: 0.5000\n",
+      "Mean Val Binary Accuracy: 59.00% (+/- 9.70%)\n",
+      "Training subject 3\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.0799 - out_activation_loss: 0.0920 - concatenated_entropies_loss: 0.0316 - out_activation_binary_accuracy: 0.9000\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.0515 - out_activation_loss: 0.0589 - concatenated_entropies_loss: 0.0217 - out_activation_binary_accuracy: 0.9250\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.0682 - out_activation_loss: 0.0791 - concatenated_entropies_loss: 0.0247 - out_activation_binary_accuracy: 0.9250\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.0545 - out_activation_loss: 0.0618 - concatenated_entropies_loss: 0.0251 - out_activation_binary_accuracy: 0.9500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.0484 - out_activation_loss: 0.0559 - concatenated_entropies_loss: 0.0183 - out_activation_binary_accuracy: 0.9500\n",
+      "Mean Val Binary Accuracy: 93.00% (+/- 1.87%)\n",
+      "Training subject 4\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.0994 - out_activation_loss: 0.1160 - concatenated_entropies_loss: 0.0329 - out_activation_binary_accuracy: 0.9250\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.1319 - out_activation_loss: 0.1567 - concatenated_entropies_loss: 0.0330 - out_activation_binary_accuracy: 0.8500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.0583 - out_activation_loss: 0.0657 - concatenated_entropies_loss: 0.0287 - out_activation_binary_accuracy: 0.9500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1041 - out_activation_loss: 0.1213 - concatenated_entropies_loss: 0.0352 - out_activation_binary_accuracy: 0.8750\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.0717 - out_activation_loss: 0.0827 - concatenated_entropies_loss: 0.0278 - out_activation_binary_accuracy: 0.9500\n",
+      "Mean Val Binary Accuracy: 91.00% (+/- 4.06%)\n",
+      "Training subject 5\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.1728 - out_activation_loss: 0.2112 - concatenated_entropies_loss: 0.0190 - out_activation_binary_accuracy: 0.8250\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.1783 - out_activation_loss: 0.2118 - concatenated_entropies_loss: 0.0443 - out_activation_binary_accuracy: 0.8500\n",
+      "2/2 [==============================] - 0s 11ms/step - loss: 0.2495 - out_activation_loss: 0.2973 - concatenated_entropies_loss: 0.0584 - out_activation_binary_accuracy: 0.7500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2363 - out_activation_loss: 0.2861 - concatenated_entropies_loss: 0.0368 - out_activation_binary_accuracy: 0.7250\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2107 - out_activation_loss: 0.2529 - concatenated_entropies_loss: 0.0417 - out_activation_binary_accuracy: 0.7436\n",
+      "Mean Val Binary Accuracy: 77.87% (+/- 4.93%)\n",
+      "Training subject 6\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1484 - out_activation_loss: 0.1804 - concatenated_entropies_loss: 0.0207 - out_activation_binary_accuracy: 0.8333\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.2327 - out_activation_loss: 0.2871 - concatenated_entropies_loss: 0.0149 - out_activation_binary_accuracy: 0.7222\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.1882 - out_activation_loss: 0.2303 - concatenated_entropies_loss: 0.0198 - out_activation_binary_accuracy: 0.8056\n",
+      "2/2 [==============================] - 0s 11ms/step - loss: 0.2038 - out_activation_loss: 0.2392 - concatenated_entropies_loss: 0.0622 - out_activation_binary_accuracy: 0.7714\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2254 - out_activation_loss: 0.2774 - concatenated_entropies_loss: 0.0177 - out_activation_binary_accuracy: 0.7714\n",
+      "Mean Val Binary Accuracy: 78.08% (+/- 3.74%)\n",
+      "Training subject 7\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 11ms/step - loss: 0.3441 - out_activation_loss: 0.4241 - concatenated_entropies_loss: 0.0240 - out_activation_binary_accuracy: 0.5625\n",
+      "2/2 [==============================] - 0s 11ms/step - loss: 0.2989 - out_activation_loss: 0.3681 - concatenated_entropies_loss: 0.0219 - out_activation_binary_accuracy: 0.6042\n",
+      "2/2 [==============================] - 0s 11ms/step - loss: 0.4347 - out_activation_loss: 0.5363 - concatenated_entropies_loss: 0.0283 - out_activation_binary_accuracy: 0.4583\n",
+      "2/2 [==============================] - 0s 11ms/step - loss: 0.3451 - out_activation_loss: 0.4243 - concatenated_entropies_loss: 0.0285 - out_activation_binary_accuracy: 0.6042\n",
+      "2/2 [==============================] - 0s 11ms/step - loss: 0.3356 - out_activation_loss: 0.4129 - concatenated_entropies_loss: 0.0263 - out_activation_binary_accuracy: 0.5625\n",
+      "Mean Val Binary Accuracy: 55.83% (+/- 5.34%)\n",
+      "Training subject 8\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.3281 - out_activation_loss: 0.4032 - concatenated_entropies_loss: 0.0279 - out_activation_binary_accuracy: 0.6000\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.3687 - out_activation_loss: 0.4556 - concatenated_entropies_loss: 0.0210 - out_activation_binary_accuracy: 0.5750\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.4338 - out_activation_loss: 0.5358 - concatenated_entropies_loss: 0.0257 - out_activation_binary_accuracy: 0.4250\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.3098 - out_activation_loss: 0.3794 - concatenated_entropies_loss: 0.0313 - out_activation_binary_accuracy: 0.6410\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.3336 - out_activation_loss: 0.4125 - concatenated_entropies_loss: 0.0178 - out_activation_binary_accuracy: 0.6410\n",
+      "Mean Val Binary Accuracy: 57.64% (+/- 7.98%)\n",
+      "Training subject 9\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 12ms/step - loss: 0.2548 - out_activation_loss: 0.3113 - concatenated_entropies_loss: 0.0286 - out_activation_binary_accuracy: 0.7083\n",
+      "2/2 [==============================] - 0s 11ms/step - loss: 0.2430 - out_activation_loss: 0.2961 - concatenated_entropies_loss: 0.0305 - out_activation_binary_accuracy: 0.7500\n",
+      "2/2 [==============================] - 0s 12ms/step - loss: 0.2890 - out_activation_loss: 0.3536 - concatenated_entropies_loss: 0.0304 - out_activation_binary_accuracy: 0.6250\n",
+      "2/2 [==============================] - 0s 11ms/step - loss: 0.2603 - out_activation_loss: 0.3184 - concatenated_entropies_loss: 0.0279 - out_activation_binary_accuracy: 0.7292\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.2479 - out_activation_loss: 0.2949 - concatenated_entropies_loss: 0.0600 - out_activation_binary_accuracy: 0.7500\n",
+      "Mean Val Binary Accuracy: 71.25% (+/- 4.64%)\n",
+      "Training subject 10\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 13ms/step - loss: 0.1504 - out_activation_loss: 0.1830 - concatenated_entropies_loss: 0.0201 - out_activation_binary_accuracy: 0.8750\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1641 - out_activation_loss: 0.1989 - concatenated_entropies_loss: 0.0253 - out_activation_binary_accuracy: 0.8250\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2264 - out_activation_loss: 0.2770 - concatenated_entropies_loss: 0.0243 - out_activation_binary_accuracy: 0.7500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1885 - out_activation_loss: 0.2290 - concatenated_entropies_loss: 0.0268 - out_activation_binary_accuracy: 0.7750\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.1327 - out_activation_loss: 0.1604 - concatenated_entropies_loss: 0.0219 - out_activation_binary_accuracy: 0.8500\n",
+      "Mean Val Binary Accuracy: 81.50% (+/- 4.64%)\n",
+      "Training subject 11\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.4143 - out_activation_loss: 0.5139 - concatenated_entropies_loss: 0.0161 - out_activation_binary_accuracy: 0.5000\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.3725 - out_activation_loss: 0.4621 - concatenated_entropies_loss: 0.0142 - out_activation_binary_accuracy: 0.5250\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.4345 - out_activation_loss: 0.5325 - concatenated_entropies_loss: 0.0427 - out_activation_binary_accuracy: 0.5500\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.3845 - out_activation_loss: 0.4718 - concatenated_entropies_loss: 0.0351 - out_activation_binary_accuracy: 0.5500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.4060 - out_activation_loss: 0.5037 - concatenated_entropies_loss: 0.0153 - out_activation_binary_accuracy: 0.5000\n",
+      "Mean Val Binary Accuracy: 52.50% (+/- 2.24%)\n",
+      "Training subject 12\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1968 - out_activation_loss: 0.2377 - concatenated_entropies_loss: 0.0333 - out_activation_binary_accuracy: 0.8000\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2632 - out_activation_loss: 0.3197 - concatenated_entropies_loss: 0.0371 - out_activation_binary_accuracy: 0.6857\n",
+      "2/2 [==============================] - 0s 7ms/step - loss: 0.2548 - out_activation_loss: 0.3101 - concatenated_entropies_loss: 0.0337 - out_activation_binary_accuracy: 0.7143\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.2497 - out_activation_loss: 0.3045 - concatenated_entropies_loss: 0.0304 - out_activation_binary_accuracy: 0.6857\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.3006 - out_activation_loss: 0.3658 - concatenated_entropies_loss: 0.0399 - out_activation_binary_accuracy: 0.6471\n",
+      "Mean Val Binary Accuracy: 70.66% (+/- 5.14%)\n",
+      "Training subject 13\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1706 - out_activation_loss: 0.2070 - concatenated_entropies_loss: 0.0249 - out_activation_binary_accuracy: 0.8000\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2000 - out_activation_loss: 0.2410 - concatenated_entropies_loss: 0.0362 - out_activation_binary_accuracy: 0.7750\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1665 - out_activation_loss: 0.1927 - concatenated_entropies_loss: 0.0619 - out_activation_binary_accuracy: 0.7750\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.1934 - out_activation_loss: 0.2312 - concatenated_entropies_loss: 0.0423 - out_activation_binary_accuracy: 0.8000\n",
+      "2/2 [==============================] - 0s 11ms/step - loss: 0.1404 - out_activation_loss: 0.1687 - concatenated_entropies_loss: 0.0270 - out_activation_binary_accuracy: 0.8250\n",
+      "Mean Val Binary Accuracy: 79.50% (+/- 1.87%)\n",
+      "Training subject 14\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.0036 - out_activation_loss: 2.5286e-04 - concatenated_entropies_loss: 0.0168 - out_activation_binary_accuracy: 1.0000\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.0061 - out_activation_loss: 0.0024 - concatenated_entropies_loss: 0.0209 - out_activation_binary_accuracy: 1.0000\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.0613 - out_activation_loss: 0.0726 - concatenated_entropies_loss: 0.0161 - out_activation_binary_accuracy: 0.9250\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.0321 - out_activation_loss: 0.0354 - concatenated_entropies_loss: 0.0190 - out_activation_binary_accuracy: 0.9750\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.0472 - out_activation_loss: 0.0538 - concatenated_entropies_loss: 0.0206 - out_activation_binary_accuracy: 0.9500\n",
+      "Mean Val Binary Accuracy: 97.00% (+/- 2.92%)\n",
+      "Training subject 15\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.2030 - out_activation_loss: 0.2441 - concatenated_entropies_loss: 0.0389 - out_activation_binary_accuracy: 0.7692\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.2102 - out_activation_loss: 0.2536 - concatenated_entropies_loss: 0.0366 - out_activation_binary_accuracy: 0.7632\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.1688 - out_activation_loss: 0.2049 - concatenated_entropies_loss: 0.0240 - out_activation_binary_accuracy: 0.8158\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.2167 - out_activation_loss: 0.2632 - concatenated_entropies_loss: 0.0309 - out_activation_binary_accuracy: 0.7368\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.1908 - out_activation_loss: 0.2327 - concatenated_entropies_loss: 0.0231 - out_activation_binary_accuracy: 0.7895\n",
+      "Mean Val Binary Accuracy: 77.49% (+/- 2.65%)\n",
+      "Training subject 16\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.3921 - out_activation_loss: 0.4829 - concatenated_entropies_loss: 0.0291 - out_activation_binary_accuracy: 0.5000\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2852 - out_activation_loss: 0.3520 - concatenated_entropies_loss: 0.0178 - out_activation_binary_accuracy: 0.7000\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.3223 - out_activation_loss: 0.3970 - concatenated_entropies_loss: 0.0236 - out_activation_binary_accuracy: 0.6500\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.3884 - out_activation_loss: 0.4794 - concatenated_entropies_loss: 0.0243 - out_activation_binary_accuracy: 0.5250\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.3184 - out_activation_loss: 0.3926 - concatenated_entropies_loss: 0.0217 - out_activation_binary_accuracy: 0.6410\n",
+      "Mean Val Binary Accuracy: 60.32% (+/- 7.71%)\n",
+      "Training subject 17\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.4174 - out_activation_loss: 0.5140 - concatenated_entropies_loss: 0.0312 - out_activation_binary_accuracy: 0.4750\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.4438 - out_activation_loss: 0.5501 - concatenated_entropies_loss: 0.0184 - out_activation_binary_accuracy: 0.4500\n",
+      "2/2 [==============================] - 0s 13ms/step - loss: 0.4765 - out_activation_loss: 0.5871 - concatenated_entropies_loss: 0.0341 - out_activation_binary_accuracy: 0.3750\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.3152 - out_activation_loss: 0.3868 - concatenated_entropies_loss: 0.0288 - out_activation_binary_accuracy: 0.6750\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.3549 - out_activation_loss: 0.4364 - concatenated_entropies_loss: 0.0288 - out_activation_binary_accuracy: 0.6250\n",
+      "Mean Val Binary Accuracy: 52.00% (+/- 11.22%)\n",
+      "Training subject 18\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.3449 - out_activation_loss: 0.4240 - concatenated_entropies_loss: 0.0284 - out_activation_binary_accuracy: 0.6000\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.3449 - out_activation_loss: 0.4237 - concatenated_entropies_loss: 0.0296 - out_activation_binary_accuracy: 0.5500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2695 - out_activation_loss: 0.3271 - concatenated_entropies_loss: 0.0390 - out_activation_binary_accuracy: 0.7500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2094 - out_activation_loss: 0.2569 - concatenated_entropies_loss: 0.0197 - out_activation_binary_accuracy: 0.8000\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2646 - out_activation_loss: 0.3259 - concatenated_entropies_loss: 0.0192 - out_activation_binary_accuracy: 0.7000\n",
+      "Mean Val Binary Accuracy: 68.00% (+/- 9.27%)\n",
+      "Training subject 19\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "1/1 [==============================] - 0s 34ms/step - loss: 0.3610 - out_activation_loss: 0.4457 - concatenated_entropies_loss: 0.0222 - out_activation_binary_accuracy: 0.5172\n",
+      "1/1 [==============================] - 0s 32ms/step - loss: 0.2108 - out_activation_loss: 0.2573 - concatenated_entropies_loss: 0.0246 - out_activation_binary_accuracy: 0.7931\n",
+      "1/1 [==============================] - 0s 33ms/step - loss: 0.2471 - out_activation_loss: 0.3000 - concatenated_entropies_loss: 0.0357 - out_activation_binary_accuracy: 0.7241\n",
+      "1/1 [==============================] - 0s 33ms/step - loss: 0.2288 - out_activation_loss: 0.2796 - concatenated_entropies_loss: 0.0256 - out_activation_binary_accuracy: 0.7500\n",
+      "1/1 [==============================] - 0s 34ms/step - loss: 0.4031 - out_activation_loss: 0.5000 - concatenated_entropies_loss: 0.0153 - out_activation_binary_accuracy: 0.5000\n",
+      "Mean Val Binary Accuracy: 65.69% (+/- 12.32%)\n",
+      "Training subject 20\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "1/1 [==============================] - 0s 31ms/step - loss: 0.3325 - out_activation_loss: 0.4118 - concatenated_entropies_loss: 0.0156 - out_activation_binary_accuracy: 0.5882\n",
+      "1/1 [==============================] - 0s 30ms/step - loss: 0.2237 - out_activation_loss: 0.2727 - concatenated_entropies_loss: 0.0280 - out_activation_binary_accuracy: 0.7647\n",
+      "1/1 [==============================] - 0s 30ms/step - loss: 0.3250 - out_activation_loss: 0.4002 - concatenated_entropies_loss: 0.0241 - out_activation_binary_accuracy: 0.5882\n",
+      "1/1 [==============================] - 0s 30ms/step - loss: 0.2669 - out_activation_loss: 0.3256 - concatenated_entropies_loss: 0.0320 - out_activation_binary_accuracy: 0.7500\n",
+      "1/1 [==============================] - 0s 29ms/step - loss: 0.3544 - out_activation_loss: 0.4376 - concatenated_entropies_loss: 0.0214 - out_activation_binary_accuracy: 0.5625\n",
+      "Mean Val Binary Accuracy: 65.07% (+/- 8.77%)\n",
+      "Training subject 21\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.2153 - out_activation_loss: 0.2625 - concatenated_entropies_loss: 0.0262 - out_activation_binary_accuracy: 0.7750\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.1393 - out_activation_loss: 0.1680 - concatenated_entropies_loss: 0.0243 - out_activation_binary_accuracy: 0.8500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1989 - out_activation_loss: 0.2413 - concatenated_entropies_loss: 0.0295 - out_activation_binary_accuracy: 0.7750\n",
+      "2/2 [==============================] - 0s 11ms/step - loss: 0.1586 - out_activation_loss: 0.1920 - concatenated_entropies_loss: 0.0246 - out_activation_binary_accuracy: 0.8250\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.1777 - out_activation_loss: 0.2153 - concatenated_entropies_loss: 0.0271 - out_activation_binary_accuracy: 0.7949\n",
+      "Mean Val Binary Accuracy: 80.40% (+/- 2.94%)\n",
+      "Training subject 22\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2047 - out_activation_loss: 0.2470 - concatenated_entropies_loss: 0.0354 - out_activation_binary_accuracy: 0.7750\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.2491 - out_activation_loss: 0.3050 - concatenated_entropies_loss: 0.0258 - out_activation_binary_accuracy: 0.7000\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.3177 - out_activation_loss: 0.3861 - concatenated_entropies_loss: 0.0441 - out_activation_binary_accuracy: 0.6250\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2629 - out_activation_loss: 0.3210 - concatenated_entropies_loss: 0.0305 - out_activation_binary_accuracy: 0.6750\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.2202 - out_activation_loss: 0.2684 - concatenated_entropies_loss: 0.0271 - out_activation_binary_accuracy: 0.8000\n",
+      "Mean Val Binary Accuracy: 71.50% (+/- 6.44%)\n",
+      "Training subject 23\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.0734 - out_activation_loss: 0.0858 - concatenated_entropies_loss: 0.0235 - out_activation_binary_accuracy: 0.9500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1137 - out_activation_loss: 0.1361 - concatenated_entropies_loss: 0.0243 - out_activation_binary_accuracy: 0.9250\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.0912 - out_activation_loss: 0.1060 - concatenated_entropies_loss: 0.0323 - out_activation_binary_accuracy: 0.9231\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.1125 - out_activation_loss: 0.1338 - concatenated_entropies_loss: 0.0277 - out_activation_binary_accuracy: 0.8718\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1454 - out_activation_loss: 0.1751 - concatenated_entropies_loss: 0.0269 - out_activation_binary_accuracy: 0.8205\n",
+      "Mean Val Binary Accuracy: 89.81% (+/- 4.64%)\n",
+      "Training subject 24\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.3087 - out_activation_loss: 0.3792 - concatenated_entropies_loss: 0.0268 - out_activation_binary_accuracy: 0.6250\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.2339 - out_activation_loss: 0.2769 - concatenated_entropies_loss: 0.0619 - out_activation_binary_accuracy: 0.7500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2259 - out_activation_loss: 0.2773 - concatenated_entropies_loss: 0.0200 - out_activation_binary_accuracy: 0.7250\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2140 - out_activation_loss: 0.2598 - concatenated_entropies_loss: 0.0304 - out_activation_binary_accuracy: 0.7250\n",
+      "2/2 [==============================] - 0s 11ms/step - loss: 0.2355 - out_activation_loss: 0.2823 - concatenated_entropies_loss: 0.0484 - out_activation_binary_accuracy: 0.7949\n",
+      "Mean Val Binary Accuracy: 72.40% (+/- 5.57%)\n",
+      "Training subject 25\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1139 - out_activation_loss: 0.1391 - concatenated_entropies_loss: 0.0129 - out_activation_binary_accuracy: 0.9000\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2860 - out_activation_loss: 0.3542 - concatenated_entropies_loss: 0.0131 - out_activation_binary_accuracy: 0.6410\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1496 - out_activation_loss: 0.1835 - concatenated_entropies_loss: 0.0139 - out_activation_binary_accuracy: 0.8205\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2225 - out_activation_loss: 0.2758 - concatenated_entropies_loss: 0.0095 - out_activation_binary_accuracy: 0.7179\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2166 - out_activation_loss: 0.2675 - concatenated_entropies_loss: 0.0133 - out_activation_binary_accuracy: 0.7436\n",
+      "Mean Val Binary Accuracy: 76.46% (+/- 8.87%)\n",
+      "Training subject 26\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.1725 - out_activation_loss: 0.2094 - concatenated_entropies_loss: 0.0247 - out_activation_binary_accuracy: 0.8500\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.1412 - out_activation_loss: 0.1688 - concatenated_entropies_loss: 0.0306 - out_activation_binary_accuracy: 0.8250\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2137 - out_activation_loss: 0.2608 - concatenated_entropies_loss: 0.0254 - out_activation_binary_accuracy: 0.7750\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1660 - out_activation_loss: 0.1936 - concatenated_entropies_loss: 0.0554 - out_activation_binary_accuracy: 0.8500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2707 - out_activation_loss: 0.3326 - concatenated_entropies_loss: 0.0235 - out_activation_binary_accuracy: 0.6750\n",
+      "Mean Val Binary Accuracy: 79.50% (+/- 6.60%)\n",
+      "Training subject 27\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.4426 - out_activation_loss: 0.5473 - concatenated_entropies_loss: 0.0238 - out_activation_binary_accuracy: 0.4595\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.3496 - out_activation_loss: 0.4316 - concatenated_entropies_loss: 0.0217 - out_activation_binary_accuracy: 0.5405\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.3440 - out_activation_loss: 0.4246 - concatenated_entropies_loss: 0.0215 - out_activation_binary_accuracy: 0.5676\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.3371 - out_activation_loss: 0.4172 - concatenated_entropies_loss: 0.0167 - out_activation_binary_accuracy: 0.5946\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.4545 - out_activation_loss: 0.5640 - concatenated_entropies_loss: 0.0163 - out_activation_binary_accuracy: 0.3784\n",
+      "Mean Val Binary Accuracy: 50.81% (+/- 7.91%)\n",
+      "Training subject 28\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.2913 - out_activation_loss: 0.3511 - concatenated_entropies_loss: 0.0520 - out_activation_binary_accuracy: 0.7000\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.3283 - out_activation_loss: 0.4038 - concatenated_entropies_loss: 0.0263 - out_activation_binary_accuracy: 0.6154\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2465 - out_activation_loss: 0.3015 - concatenated_entropies_loss: 0.0266 - out_activation_binary_accuracy: 0.6410\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.2065 - out_activation_loss: 0.2509 - concatenated_entropies_loss: 0.0289 - out_activation_binary_accuracy: 0.7692\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.3141 - out_activation_loss: 0.3861 - concatenated_entropies_loss: 0.0264 - out_activation_binary_accuracy: 0.6667\n",
+      "Mean Val Binary Accuracy: 67.85% (+/- 5.33%)\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Iterar sobre los sujetos y guardar los resultados\n",
+    "for sbj in range(1, 29):\n",
+    "    results_df = CV_giga(sbj, results_df)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "873b3ab4",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-08-12T17:17:26.330570Z",
+     "iopub.status.busy": "2024-08-12T17:17:26.330229Z",
+     "iopub.status.idle": "2024-08-12T17:41:00.818665Z",
+     "shell.execute_reply": "2024-08-12T17:41:00.817570Z"
+    },
+    "papermill": {
+     "duration": 1414.573118,
+     "end_time": "2024-08-12T17:41:00.859897",
+     "exception": false,
+     "start_time": "2024-08-12T17:17:26.286779",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Training subject 30\n",
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "1/1 [==============================] - 0s 35ms/step - loss: 0.4793 - out_activation_loss: 0.5843 - concatenated_entropies_loss: 0.0592 - out_activation_binary_accuracy: 0.4400\n",
+      "1/1 [==============================] - 0s 32ms/step - loss: 0.2679 - out_activation_loss: 0.3218 - concatenated_entropies_loss: 0.0526 - out_activation_binary_accuracy: 0.6800\n",
+      "1/1 [==============================] - 0s 33ms/step - loss: 0.3561 - out_activation_loss: 0.4223 - concatenated_entropies_loss: 0.0913 - out_activation_binary_accuracy: 0.5417\n",
+      "1/1 [==============================] - 0s 32ms/step - loss: 0.4459 - out_activation_loss: 0.5344 - concatenated_entropies_loss: 0.0916 - out_activation_binary_accuracy: 0.4583\n",
+      "1/1 [==============================] - 0s 35ms/step - loss: 0.3648 - out_activation_loss: 0.4329 - concatenated_entropies_loss: 0.0921 - out_activation_binary_accuracy: 0.6250\n",
+      "Mean Val Binary Accuracy: 54.90% (+/- 9.28%)\n",
+      "Training subject 31\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2280 - out_activation_loss: 0.2711 - concatenated_entropies_loss: 0.0553 - out_activation_binary_accuracy: 0.7250\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2416 - out_activation_loss: 0.2937 - concatenated_entropies_loss: 0.0335 - out_activation_binary_accuracy: 0.6750\n",
+      "2/2 [==============================] - 0s 12ms/step - loss: 0.2287 - out_activation_loss: 0.2782 - concatenated_entropies_loss: 0.0309 - out_activation_binary_accuracy: 0.7500\n",
+      "2/2 [==============================] - 0s 11ms/step - loss: 0.2166 - out_activation_loss: 0.2584 - concatenated_entropies_loss: 0.0494 - out_activation_binary_accuracy: 0.7750\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.2745 - out_activation_loss: 0.3356 - concatenated_entropies_loss: 0.0298 - out_activation_binary_accuracy: 0.6410\n",
+      "Mean Val Binary Accuracy: 71.32% (+/- 4.90%)\n",
+      "Training subject 32\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 12ms/step - loss: 0.3168 - out_activation_loss: 0.3907 - concatenated_entropies_loss: 0.0214 - out_activation_binary_accuracy: 0.6000\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.4108 - out_activation_loss: 0.5032 - concatenated_entropies_loss: 0.0413 - out_activation_binary_accuracy: 0.5000\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.3109 - out_activation_loss: 0.3832 - concatenated_entropies_loss: 0.0218 - out_activation_binary_accuracy: 0.6000\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2884 - out_activation_loss: 0.3536 - concatenated_entropies_loss: 0.0275 - out_activation_binary_accuracy: 0.6750\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.2878 - out_activation_loss: 0.3513 - concatenated_entropies_loss: 0.0337 - out_activation_binary_accuracy: 0.7000\n",
+      "Mean Val Binary Accuracy: 61.50% (+/- 7.00%)\n",
+      "Training subject 33\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2685 - out_activation_loss: 0.3320 - concatenated_entropies_loss: 0.0145 - out_activation_binary_accuracy: 0.6750\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.3590 - out_activation_loss: 0.4450 - concatenated_entropies_loss: 0.0150 - out_activation_binary_accuracy: 0.6000\n",
+      "2/2 [==============================] - 0s 11ms/step - loss: 0.3785 - out_activation_loss: 0.4691 - concatenated_entropies_loss: 0.0164 - out_activation_binary_accuracy: 0.5250\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.3493 - out_activation_loss: 0.4333 - concatenated_entropies_loss: 0.0133 - out_activation_binary_accuracy: 0.5750\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2799 - out_activation_loss: 0.3441 - concatenated_entropies_loss: 0.0234 - out_activation_binary_accuracy: 0.6667\n",
+      "Mean Val Binary Accuracy: 60.83% (+/- 5.65%)\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    }
+   ],
+   "source": [
+    "for sbj in range(30, 34):\n",
+    "    results_df = CV_giga(sbj, results_df)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "3c3e3ee3",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-08-12T17:41:00.955418Z",
+     "iopub.status.busy": "2024-08-12T17:41:00.954661Z",
+     "iopub.status.idle": "2024-08-12T19:35:43.664020Z",
+     "shell.execute_reply": "2024-08-12T19:35:43.662896Z"
+    },
+    "papermill": {
+     "duration": 6882.820078,
+     "end_time": "2024-08-12T19:35:43.727350",
+     "exception": false,
+     "start_time": "2024-08-12T17:41:00.907272",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Training subject 35\n",
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 13ms/step - loss: 0.1099 - out_activation_loss: 0.1271 - concatenated_entropies_loss: 0.0409 - out_activation_binary_accuracy: 0.8750\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.2203 - out_activation_loss: 0.2636 - concatenated_entropies_loss: 0.0471 - out_activation_binary_accuracy: 0.7500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1713 - out_activation_loss: 0.2011 - concatenated_entropies_loss: 0.0521 - out_activation_binary_accuracy: 0.8250\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1459 - out_activation_loss: 0.1638 - concatenated_entropies_loss: 0.0742 - out_activation_binary_accuracy: 0.8500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1179 - out_activation_loss: 0.1361 - concatenated_entropies_loss: 0.0448 - out_activation_binary_accuracy: 0.8750\n",
+      "Mean Val Binary Accuracy: 83.50% (+/- 4.64%)\n",
+      "Training subject 36\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.3552 - out_activation_loss: 0.4360 - concatenated_entropies_loss: 0.0317 - out_activation_binary_accuracy: 0.5641\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.2815 - out_activation_loss: 0.3415 - concatenated_entropies_loss: 0.0418 - out_activation_binary_accuracy: 0.6667\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.3378 - out_activation_loss: 0.4157 - concatenated_entropies_loss: 0.0259 - out_activation_binary_accuracy: 0.5897\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.2385 - out_activation_loss: 0.2918 - concatenated_entropies_loss: 0.0253 - out_activation_binary_accuracy: 0.7179\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2549 - out_activation_loss: 0.3118 - concatenated_entropies_loss: 0.0272 - out_activation_binary_accuracy: 0.6923\n",
+      "Mean Val Binary Accuracy: 64.62% (+/- 5.94%)\n",
+      "Training subject 37\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2092 - out_activation_loss: 0.2544 - concatenated_entropies_loss: 0.0285 - out_activation_binary_accuracy: 0.7750\n",
+      "2/2 [==============================] - 0s 12ms/step - loss: 0.2082 - out_activation_loss: 0.2529 - concatenated_entropies_loss: 0.0293 - out_activation_binary_accuracy: 0.7750\n",
+      "2/2 [==============================] - 0s 12ms/step - loss: 0.2199 - out_activation_loss: 0.2683 - concatenated_entropies_loss: 0.0261 - out_activation_binary_accuracy: 0.7250\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2730 - out_activation_loss: 0.3330 - concatenated_entropies_loss: 0.0330 - out_activation_binary_accuracy: 0.6750\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1702 - out_activation_loss: 0.2058 - concatenated_entropies_loss: 0.0277 - out_activation_binary_accuracy: 0.8000\n",
+      "Mean Val Binary Accuracy: 75.00% (+/- 4.47%)\n",
+      "Training subject 38\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.4421 - out_activation_loss: 0.5474 - concatenated_entropies_loss: 0.0207 - out_activation_binary_accuracy: 0.4615\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.3858 - out_activation_loss: 0.4572 - concatenated_entropies_loss: 0.1001 - out_activation_binary_accuracy: 0.5263\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2539 - out_activation_loss: 0.3093 - concatenated_entropies_loss: 0.0325 - out_activation_binary_accuracy: 0.7105\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.4465 - out_activation_loss: 0.5531 - concatenated_entropies_loss: 0.0200 - out_activation_binary_accuracy: 0.4474\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.4457 - out_activation_loss: 0.5513 - concatenated_entropies_loss: 0.0233 - out_activation_binary_accuracy: 0.4474\n",
+      "Mean Val Binary Accuracy: 51.86% (+/- 10.03%)\n",
+      "Training subject 39\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2875 - out_activation_loss: 0.3556 - concatenated_entropies_loss: 0.0152 - out_activation_binary_accuracy: 0.6500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2825 - out_activation_loss: 0.3469 - concatenated_entropies_loss: 0.0246 - out_activation_binary_accuracy: 0.6500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2780 - out_activation_loss: 0.3408 - concatenated_entropies_loss: 0.0264 - out_activation_binary_accuracy: 0.7000\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1982 - out_activation_loss: 0.2422 - concatenated_entropies_loss: 0.0223 - out_activation_binary_accuracy: 0.7500\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.2662 - out_activation_loss: 0.3276 - concatenated_entropies_loss: 0.0209 - out_activation_binary_accuracy: 0.6923\n",
+      "Mean Val Binary Accuracy: 68.85% (+/- 3.71%)\n",
+      "Training subject 40\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.3784 - out_activation_loss: 0.4646 - concatenated_entropies_loss: 0.0338 - out_activation_binary_accuracy: 0.4750\n",
+      "2/2 [==============================] - 0s 12ms/step - loss: 0.3494 - out_activation_loss: 0.4275 - concatenated_entropies_loss: 0.0373 - out_activation_binary_accuracy: 0.5250\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.3391 - out_activation_loss: 0.4161 - concatenated_entropies_loss: 0.0312 - out_activation_binary_accuracy: 0.5750\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.3711 - out_activation_loss: 0.4531 - concatenated_entropies_loss: 0.0431 - out_activation_binary_accuracy: 0.5750\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.4346 - out_activation_loss: 0.5343 - concatenated_entropies_loss: 0.0360 - out_activation_binary_accuracy: 0.4500\n",
+      "Mean Val Binary Accuracy: 52.00% (+/- 5.10%)\n",
+      "Training subject 41\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.0567 - out_activation_loss: 0.0627 - concatenated_entropies_loss: 0.0323 - out_activation_binary_accuracy: 0.9500\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.1213 - out_activation_loss: 0.1442 - concatenated_entropies_loss: 0.0299 - out_activation_binary_accuracy: 0.8750\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.0825 - out_activation_loss: 0.0945 - concatenated_entropies_loss: 0.0346 - out_activation_binary_accuracy: 0.9250\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.0821 - out_activation_loss: 0.0954 - concatenated_entropies_loss: 0.0290 - out_activation_binary_accuracy: 0.9000\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.0701 - out_activation_loss: 0.0799 - concatenated_entropies_loss: 0.0308 - out_activation_binary_accuracy: 0.9487\n",
+      "Mean Val Binary Accuracy: 91.97% (+/- 2.89%)\n",
+      "Training subject 42\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.2905 - out_activation_loss: 0.3599 - concatenated_entropies_loss: 0.0130 - out_activation_binary_accuracy: 0.7250\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.3650 - out_activation_loss: 0.4525 - concatenated_entropies_loss: 0.0150 - out_activation_binary_accuracy: 0.5500\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.3565 - out_activation_loss: 0.4418 - concatenated_entropies_loss: 0.0154 - out_activation_binary_accuracy: 0.5250\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.2081 - out_activation_loss: 0.2517 - concatenated_entropies_loss: 0.0338 - out_activation_binary_accuracy: 0.8250\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.2833 - out_activation_loss: 0.3478 - concatenated_entropies_loss: 0.0253 - out_activation_binary_accuracy: 0.6750\n",
+      "Mean Val Binary Accuracy: 66.00% (+/- 11.14%)\n",
+      "Training subject 43\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 12ms/step - loss: 0.0084 - out_activation_loss: 0.0052 - concatenated_entropies_loss: 0.0210 - out_activation_binary_accuracy: 1.0000\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.0244 - out_activation_loss: 0.0233 - concatenated_entropies_loss: 0.0289 - out_activation_binary_accuracy: 0.9750\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.0337 - out_activation_loss: 0.0350 - concatenated_entropies_loss: 0.0282 - out_activation_binary_accuracy: 0.9750\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.0339 - out_activation_loss: 0.0349 - concatenated_entropies_loss: 0.0298 - out_activation_binary_accuracy: 0.9750\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.0226 - out_activation_loss: 0.0213 - concatenated_entropies_loss: 0.0279 - out_activation_binary_accuracy: 0.9750\n",
+      "Mean Val Binary Accuracy: 98.00% (+/- 1.00%)\n",
+      "Training subject 44\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.1382 - out_activation_loss: 0.1663 - concatenated_entropies_loss: 0.0259 - out_activation_binary_accuracy: 0.8500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1168 - out_activation_loss: 0.1382 - concatenated_entropies_loss: 0.0310 - out_activation_binary_accuracy: 0.8750\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1267 - out_activation_loss: 0.1530 - concatenated_entropies_loss: 0.0214 - out_activation_binary_accuracy: 0.8750\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1346 - out_activation_loss: 0.1615 - concatenated_entropies_loss: 0.0268 - out_activation_binary_accuracy: 0.8500\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.1619 - out_activation_loss: 0.1975 - concatenated_entropies_loss: 0.0195 - out_activation_binary_accuracy: 0.8250\n",
+      "Mean Val Binary Accuracy: 85.50% (+/- 1.87%)\n",
+      "Training subject 45\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2389 - out_activation_loss: 0.2901 - concatenated_entropies_loss: 0.0341 - out_activation_binary_accuracy: 0.7750\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.3464 - out_activation_loss: 0.4257 - concatenated_entropies_loss: 0.0290 - out_activation_binary_accuracy: 0.5750\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.3964 - out_activation_loss: 0.4883 - concatenated_entropies_loss: 0.0290 - out_activation_binary_accuracy: 0.5000\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.3432 - out_activation_loss: 0.4203 - concatenated_entropies_loss: 0.0346 - out_activation_binary_accuracy: 0.5500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2866 - out_activation_loss: 0.3492 - concatenated_entropies_loss: 0.0359 - out_activation_binary_accuracy: 0.6500\n",
+      "Mean Val Binary Accuracy: 61.00% (+/- 9.57%)\n",
+      "Training subject 46\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 11ms/step - loss: 0.2125 - out_activation_loss: 0.2572 - concatenated_entropies_loss: 0.0336 - out_activation_binary_accuracy: 0.7917\n",
+      "2/2 [==============================] - 0s 12ms/step - loss: 0.1846 - out_activation_loss: 0.2246 - concatenated_entropies_loss: 0.0243 - out_activation_binary_accuracy: 0.8333\n",
+      "2/2 [==============================] - 0s 11ms/step - loss: 0.2454 - out_activation_loss: 0.3008 - concatenated_entropies_loss: 0.0239 - out_activation_binary_accuracy: 0.7083\n",
+      "2/2 [==============================] - 0s 11ms/step - loss: 0.1685 - out_activation_loss: 0.2054 - concatenated_entropies_loss: 0.0206 - out_activation_binary_accuracy: 0.8333\n",
+      "2/2 [==============================] - 0s 11ms/step - loss: 0.2215 - out_activation_loss: 0.2696 - concatenated_entropies_loss: 0.0289 - out_activation_binary_accuracy: 0.7234\n",
+      "Mean Val Binary Accuracy: 77.80% (+/- 5.32%)\n",
+      "Training subject 47\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.3297 - out_activation_loss: 0.4045 - concatenated_entropies_loss: 0.0307 - out_activation_binary_accuracy: 0.5385\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.1875 - out_activation_loss: 0.2276 - concatenated_entropies_loss: 0.0269 - out_activation_binary_accuracy: 0.8205\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.2970 - out_activation_loss: 0.3669 - concatenated_entropies_loss: 0.0176 - out_activation_binary_accuracy: 0.6579\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2051 - out_activation_loss: 0.2509 - concatenated_entropies_loss: 0.0219 - out_activation_binary_accuracy: 0.7368\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2380 - out_activation_loss: 0.2922 - concatenated_entropies_loss: 0.0213 - out_activation_binary_accuracy: 0.7368\n",
+      "Mean Val Binary Accuracy: 69.81% (+/- 9.50%)\n",
+      "Training subject 48\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.0678 - out_activation_loss: 0.0795 - concatenated_entropies_loss: 0.0212 - out_activation_binary_accuracy: 0.9250\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.0467 - out_activation_loss: 0.0517 - concatenated_entropies_loss: 0.0266 - out_activation_binary_accuracy: 0.9500\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.0946 - out_activation_loss: 0.1122 - concatenated_entropies_loss: 0.0244 - out_activation_binary_accuracy: 0.9000\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.0640 - out_activation_loss: 0.0750 - concatenated_entropies_loss: 0.0197 - out_activation_binary_accuracy: 0.9250\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.0627 - out_activation_loss: 0.0728 - concatenated_entropies_loss: 0.0219 - out_activation_binary_accuracy: 0.8974\n",
+      "Mean Val Binary Accuracy: 91.95% (+/- 1.93%)\n",
+      "Training subject 49\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.2761 - out_activation_loss: 0.3340 - concatenated_entropies_loss: 0.0447 - out_activation_binary_accuracy: 0.6667\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.0945 - out_activation_loss: 0.1102 - concatenated_entropies_loss: 0.0317 - out_activation_binary_accuracy: 0.8974\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2242 - out_activation_loss: 0.2710 - concatenated_entropies_loss: 0.0368 - out_activation_binary_accuracy: 0.7895\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1284 - out_activation_loss: 0.1520 - concatenated_entropies_loss: 0.0341 - out_activation_binary_accuracy: 0.8684\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.1584 - out_activation_loss: 0.1889 - concatenated_entropies_loss: 0.0365 - out_activation_binary_accuracy: 0.8158\n",
+      "Mean Val Binary Accuracy: 80.76% (+/- 8.00%)\n",
+      "Training subject 50\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1266 - out_activation_loss: 0.1539 - concatenated_entropies_loss: 0.0172 - out_activation_binary_accuracy: 0.8750\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1039 - out_activation_loss: 0.1221 - concatenated_entropies_loss: 0.0311 - out_activation_binary_accuracy: 0.8750\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.0595 - out_activation_loss: 0.0700 - concatenated_entropies_loss: 0.0175 - out_activation_binary_accuracy: 0.9750\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.0730 - out_activation_loss: 0.0862 - concatenated_entropies_loss: 0.0199 - out_activation_binary_accuracy: 0.9500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.1250 - out_activation_loss: 0.1493 - concatenated_entropies_loss: 0.0276 - out_activation_binary_accuracy: 0.8500\n",
+      "Mean Val Binary Accuracy: 90.50% (+/- 4.85%)\n",
+      "Training subject 51\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.4617 - out_activation_loss: 0.5680 - concatenated_entropies_loss: 0.0368 - out_activation_binary_accuracy: 0.4103\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.3691 - out_activation_loss: 0.4493 - concatenated_entropies_loss: 0.0481 - out_activation_binary_accuracy: 0.5641\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.3399 - out_activation_loss: 0.4183 - concatenated_entropies_loss: 0.0263 - out_activation_binary_accuracy: 0.6154\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.3578 - out_activation_loss: 0.4362 - concatenated_entropies_loss: 0.0443 - out_activation_binary_accuracy: 0.5897\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.4657 - out_activation_loss: 0.5728 - concatenated_entropies_loss: 0.0370 - out_activation_binary_accuracy: 0.3684\n",
+      "Mean Val Binary Accuracy: 50.96% (+/- 10.04%)\n",
+      "Training subject 52\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resampling from 512.000000 to 128.000000 Hz.\n",
+      "2/2 [==============================] - 0s 8ms/step - loss: 0.3514 - out_activation_loss: 0.4232 - concatenated_entropies_loss: 0.0645 - out_activation_binary_accuracy: 0.5500\n",
+      "2/2 [==============================] - 0s 12ms/step - loss: 0.3543 - out_activation_loss: 0.4340 - concatenated_entropies_loss: 0.0356 - out_activation_binary_accuracy: 0.5500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2912 - out_activation_loss: 0.3590 - concatenated_entropies_loss: 0.0198 - out_activation_binary_accuracy: 0.6500\n",
+      "2/2 [==============================] - 0s 9ms/step - loss: 0.2753 - out_activation_loss: 0.3371 - concatenated_entropies_loss: 0.0279 - out_activation_binary_accuracy: 0.6750\n",
+      "2/2 [==============================] - 0s 10ms/step - loss: 0.3637 - out_activation_loss: 0.4357 - concatenated_entropies_loss: 0.0757 - out_activation_binary_accuracy: 0.6000\n",
+      "Mean Val Binary Accuracy: 60.50% (+/- 5.10%)\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_24/1772531676.py:40: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.\n",
+      "  results_df = results_df.append({\n"
+     ]
+    }
+   ],
+   "source": [
+    "for sbj in range(35, 53):\n",
+    "    results_df = CV_giga(sbj, results_df)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "8a9b8472",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-08-12T19:35:43.858676Z",
+     "iopub.status.busy": "2024-08-12T19:35:43.858358Z",
+     "iopub.status.idle": "2024-08-12T19:35:44.111004Z",
+     "shell.execute_reply": "2024-08-12T19:35:44.110041Z"
+    },
+    "papermill": {
+     "duration": 0.320866,
+     "end_time": "2024-08-12T19:35:44.113099",
+     "exception": false,
+     "start_time": "2024-08-12T19:35:43.792233",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "    Subject  Mean Accuracy  Standard Deviation\n",
+      "0       1.0       0.725000            0.054772\n",
+      "1       2.0       0.590000            0.096954\n",
+      "2       3.0       0.930000            0.018708\n",
+      "3       4.0       0.910000            0.040620\n",
+      "4       5.0       0.778718            0.049330\n",
+      "5       6.0       0.780794            0.037362\n",
+      "6       7.0       0.558333            0.053359\n",
+      "7       8.0       0.576410            0.079792\n",
+      "8       9.0       0.712500            0.046398\n",
+      "9      10.0       0.815000            0.046368\n",
+      "10     11.0       0.525000            0.022361\n",
+      "11     12.0       0.706555            0.051381\n",
+      "12     13.0       0.795000            0.018708\n",
+      "13     14.0       0.970000            0.029155\n",
+      "14     15.0       0.774899            0.026468\n",
+      "15     16.0       0.603205            0.077145\n",
+      "16     17.0       0.520000            0.112250\n",
+      "17     18.0       0.680000            0.092736\n",
+      "18     19.0       0.656897            0.123176\n",
+      "19     20.0       0.650735            0.087682\n",
+      "20     21.0       0.803974            0.029402\n",
+      "21     22.0       0.715000            0.064420\n",
+      "22     23.0       0.898077            0.046374\n",
+      "23     24.0       0.723974            0.055681\n",
+      "24     25.0       0.764615            0.088711\n",
+      "25     26.0       0.795000            0.065955\n",
+      "26     27.0       0.508108            0.079074\n",
+      "27     28.0       0.678462            0.053333\n",
+      "28     30.0       0.549000            0.092836\n",
+      "29     31.0       0.713205            0.048951\n",
+      "30     32.0       0.615000            0.070000\n",
+      "31     33.0       0.608333            0.056519\n",
+      "32     35.0       0.835000            0.046368\n",
+      "33     36.0       0.646154            0.059363\n",
+      "34     37.0       0.750000            0.044721\n",
+      "35     38.0       0.518623            0.100299\n",
+      "36     39.0       0.688462            0.037131\n",
+      "37     40.0       0.520000            0.050990\n",
+      "38     41.0       0.919744            0.028894\n",
+      "39     42.0       0.660000            0.111355\n",
+      "40     43.0       0.980000            0.010000\n",
+      "41     44.0       0.855000            0.018708\n",
+      "42     45.0       0.610000            0.095656\n",
+      "43     46.0       0.778014            0.053187\n",
+      "44     47.0       0.698111            0.094961\n",
+      "45     48.0       0.919487            0.019276\n",
+      "46     49.0       0.807557            0.080034\n",
+      "47     50.0       0.905000            0.048477\n",
+      "48     51.0       0.509582            0.100384\n",
+      "49     52.0       0.605000            0.050990\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<a href='cross_validation_results_inception.xlsx' target='_blank'>cross_validation_results_inception.xlsx</a><br>"
+      ],
+      "text/plain": [
+       "/kaggle/working/cross_validation_results_inception.xlsx"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Guardar los resultados en un archivo xlsx\n",
+    "results_df.to_excel('cross_validation_results_inception.xlsx', index=False)\n",
+    "\n",
+    "# Mostrar el DataFrame final\n",
+    "print(results_df)\n",
+    "\n",
+    "# Generar un enlace de descarga para el archivo xlsx\n",
+    "FileLink('cross_validation_results_inception.xlsx')"
+   ]
+  }
+ ],
+ "metadata": {
+  "kaggle": {
+   "accelerator": "nvidiaTeslaT4",
+   "dataSources": [
+    {
+     "datasetId": 3008205,
+     "sourceId": 5175158,
+     "sourceType": "datasetVersion"
+    }
+   ],
+   "dockerImageVersionId": 30747,
+   "isGpuEnabled": true,
+   "isInternetEnabled": true,
+   "language": "python",
+   "sourceType": "notebook"
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.13"
+  },
+  "papermill": {
+   "default_parameters": {},
+   "duration": 18843.364463,
+   "end_time": "2024-08-12T19:35:47.746020",
+   "environment_variables": {},
+   "exception": null,
+   "input_path": "__notebook__.ipynb",
+   "output_path": "__notebook__.ipynb",
+   "parameters": {},
+   "start_time": "2024-08-12T14:21:44.381557",
+   "version": "2.5.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
